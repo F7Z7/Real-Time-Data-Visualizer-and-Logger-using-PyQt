@@ -1,0 +1,7 @@
+PyQt5>=5.15
+pyqtgraph>=0.13
+numpy>=1.21
+pandas>=1.3          # For data handling and export
+openpyxl>=3.0        # For Excel export support
+pyserial>=3.4        # For serial communication support
+SQLAlchemy>=1.4      # For SQL export support
