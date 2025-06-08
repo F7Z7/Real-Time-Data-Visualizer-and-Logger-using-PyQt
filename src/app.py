@@ -18,11 +18,12 @@ class MainWindow(QMainWindow):
         fromVal=int(self.fromInput.toPlainText())
         toVal=int(self.toInput.toPlainText())
 
+
         x=list(range(fromVal,toVal))
         y=[random.uniform(0,100) for _ in x]
 
         self.plot_widget.clear()
-        self.plot_widget.plot(x, y, pen=None, symbol='o', symbolSize=7, symbolBrush='b')
+        self.plot_widget.plot(x, y, pen=pg.mkPen(color='b', width=2), symbol='o', symbolSize=7, symbolBrush='b')
         self.plot_widget.setLabel('bottom', 'x axis')
         self.plot_widget.setLabel('left', 'random value')
         self.plot_widget.setXRange(fromVal, toVal)
