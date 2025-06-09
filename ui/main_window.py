@@ -1,6 +1,116 @@
-from PyQt5.QtWidgets import QMainWindow
-
-
+import numpy as np
+from PyQt5.QtWidgets import (
+    QMainWindow, QWidget, QVBoxLayout, QPushButton,
+    QHBoxLayout, QLabel, QFrame
+)
+from PyQt5.QtCore import Qt,QTimer
+import pyqtgraph as pg
+from src.plotting import sine_graph,cos_graph
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("Real-Time-Visualiser")
+        self.setGeometry(300,400,500,500)
+        self.initUI()
+        # self.auto_scroll = True
+    def initUI(self):
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        layout = QVBoxLayout(central_widget)
+
+        #grpah
+
+        self.plot_widget=pg.PlotWidget()
+        layout.addWidget(self.plot_widget)
+        self.plot_widget.setBackground('w')
+        self.plot_widget.setFixedHeight(300)
+        self.plot_widget.showGrid(x=True, y=True)
+
+        #sine and cos wave
+        self.plot_widget.addLegend()
+        self.sine_curve = self.plot_widget.plot(pen=pg.mkPen(color='r',width=5), name="Sine")
+        self.cos_curve = self.plot_widget.plot(pen=pg.mkPen(color='b',width=5), name="Cosine")
+
+        #buttons:Start-reset-stop
+        button_layout = QHBoxLayout()
+        self.start_button = QPushButton("Start")
+        self.stop_button = QPushButton("Stop")
+        self.reset_button = QPushButton("Reset")
+        self.zoom_in_button = QPushButton("Zoom In")
+        self.zoom_out_button = QPushButton("Zoom Out")
+        for btn in [self.start_button, self.stop_button, self.reset_button,self.zoom_in_button,self.zoom_out_button]:
+            button_layout.addWidget(btn) #adding buttons to this layout
+
+        layout.addLayout(button_layout) #placing this inside amin window
+
+
+        #giving event handlers
+
+        self.start_button.clicked.connect(self.on_click_start)
+        self.stop_button.clicked.connect(self.on_click_stop)
+        self.reset_button.clicked.connect(self.reset_plot)
+        self.zoom_in_button.clicked.connect(self.zoom_in)
+        self.zoom_out_button.clicked.connect(self.zoom_out)
+
+        self.timer=QTimer()
+        self.timer.timeout.connect(self.update_plot)
+
+        self.phase = 0
+        self.t=0
+        self.dt=0.05
+        self.x=[]
+        self.sine_data=[]
+        self.cos_data=[]
+        self.max_points=200
+        self.xmin=0
+        self.xmax=0
+        self.center=0
+
+
+    def on_click_start(self):
+        self.timer.start(50)
+    def on_click_stop(self):
+        self.timer.stop()
+    def reset_plot(self):
+        #full reset to 0
+        self.timer.stop()
+        self.t=0
+        self.x.clear()
+        self.sine_data.clear()
+        self.cos_data.clear()#clearing data
+        self.sine_curve.clear()
+        self.cos_curve.clear()
+        self.plot_widget.setXRange(0, 10)
+        self.plot_widget.setYRange(-1, 1)#so that the axis reset
+
+    def zoom_in(self):
+        xmin, xmax = self.plot_widget.viewRange()[0]
+        center = (xmin + xmax) / 2
+        width = (xmax - xmin) * 0.5  # zoom in by 50%
+        self.plot_widget.setXRange(center - width / 2, center + width / 2)
+
+    def zoom_out(self):
+        xmin, xmax = self.plot_widget.viewRange()[0]
+        center = (xmin + xmax) / 2
+        width = (xmax - xmin) * 2  # zoom out by 2x
+        self.plot_widget.setXRange(center - width / 2, center + width / 2)
+
+    def update_plot(self):
+        self.t+=self.dt #update time
+        self.x.append(self.t)
+        self.sine_data.append(sine_graph(self.t))
+        self.cos_data.append(cos_graph(self.t))
+
+
+        if len(self.x) > self.max_points:
+            self.x.pop(0)
+            self.sine_data.pop(0)
+            self.cos_data.pop(0)
+        #moving the graph
+
+        self.sine_curve.setData(self.x, self.sine_data) #new data given
+        self.cos_curve.setData(self.x, self.cos_data)
+
+        self.plot_widget.setXRange(self.t - 10, self.t)
+        self.plot_widget.setYRange(-1, 1)
+
