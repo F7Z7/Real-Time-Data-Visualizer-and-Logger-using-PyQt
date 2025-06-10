@@ -1,7 +1,7 @@
 import numpy as np
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
-    QHBoxLayout, QLabel, QFrame
+    QHBoxLayout, QLabel, QFrame, QCheckBox
 )
 from PyQt5.QtCore import Qt,QTimer
 import pyqtgraph as pg
@@ -51,7 +51,14 @@ class MainWindow(QMainWindow):
 
         layout.addLayout(button_layout) #placing this inside amin window
 
-
+        #chechk boxes for toggling visibilities
+        self.choices=["Show Signal A","Show Signal B "]
+        self.signal_check=[]
+        for choices in self.choices:
+            check_box=QCheckBox(choices)
+            check_box.setChecked(True)
+            self.signal_check.append(check_box)
+            layout.addWidget(check_box)#adding the check box to the layout
         #giving event handlers
 
         self.start_button.clicked.connect(self.on_click_start)
@@ -59,6 +66,9 @@ class MainWindow(QMainWindow):
         self.reset_button.clicked.connect(self.reset_plot)
         self.zoom_in_button.clicked.connect(self.zoom_in)
         self.zoom_out_button.clicked.connect(self.zoom_out)
+        #for toggling viisbility of signals
+        self.signal_check[0].stateChanged.connect(self.toggle_visbile_signA)
+        self.signal_check[1].stateChanged.connect(self.toggle_visbile_signB)
 
         self.timer=QTimer()
         self.timer.timeout.connect(self.update_plot)
@@ -90,6 +100,8 @@ class MainWindow(QMainWindow):
         self.cos_curve.clear()
         self.plot_widget1.setXRange(0, 10)
         self.plot_widget1.setYRange(-1, 1)#so that the axis reset
+        self.plot_widget2.setXRange(0, 10)
+        self.plot_widget2.setYRange(-1, 1)
 
     def zoom_in(self):
         xmin, xmax = self.plot_widget1.viewRange()[0]
@@ -122,3 +134,15 @@ class MainWindow(QMainWindow):
         self.plot_widget1.setXRange(self.t - 10, self.t)
         self.plot_widget1.setYRange(-1, 1)
 
+
+    def toggle_visbile_signA(self,state):
+        if(state==Qt.Checked):
+            self.sine_curve.setVisible(True)
+        else:
+            self.sine_curve.setVisible(False)
+
+    def toggle_visbile_signB(self, state):
+        if (state == Qt.Checked):
+            self.cos_curve.setVisible(True)
+        else:
+            self.cos_curve.setVisible(False)
