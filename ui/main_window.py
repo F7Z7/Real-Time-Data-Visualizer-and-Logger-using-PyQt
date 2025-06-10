@@ -114,17 +114,28 @@ class MainWindow(QMainWindow):
         self.plot_widget2.setXRange(0, 10)
         self.plot_widget2.setYRange(-1, 1)
 
+
+    #new zoom logic
+    def apply_zoom(self,zoom_in:bool):
+        factor = 0.5 if zoom_in else 2
+        mode = self.zoom_combo_box.currentText()
+        for plot_widget in [self.plot_widget1, self.plot_widget2]:
+            x_range, y_range = plot_widget.viewRange()
+            x_center = (x_range[0] + x_range[1]) / 2
+            y_center = (y_range[0] + y_range[1]) / 2
+            if mode in ["X Axis", "Both"]:
+                x_width = (x_range[1] - x_range[0]) * factor
+                plot_widget.setXRange(x_center - x_width / 2, x_center + x_width / 2)
+            if mode in ["Y Axis", "Both"]:
+                y_width = (y_range[1] - y_range[0]) * factor
+                plot_widget.setYRange(y_center - y_width / 2, y_center + y_width / 2)
+
     def zoom_in(self):
-        xmin, xmax = self.plot_widget1.viewRange()[0]
-        center = (xmin + xmax) / 2
-        width = (xmax - xmin) * 0.5  # zoom in by 50%
-        self.plot_widget1.setXRange(center - width / 2, center + width / 2)
+        self.apply_zoom(zoom_in=True)
 
     def zoom_out(self):
-        xmin, xmax = self.plot_widget1.viewRange()[0]
-        center = (xmin + xmax) / 2
-        width = (xmax - xmin) * 2  # zoom out by 2x
-        self.plot_widget1.setXRange(center - width / 2, center + width / 2)
+        self.apply_zoom(zoom_in=False)
+
 
     def update_plot(self):
         self.t+=self.dt #update time
@@ -142,8 +153,9 @@ class MainWindow(QMainWindow):
         self.sine_curve.setData(self.x, self.sine_data) #new data given
         self.cos_curve.setData(self.x, self.cos_data)
 
-        self.plot_widget1.setXRange(self.t - 10, self.t)
-        self.plot_widget1.setYRange(-1, 1)
+        mode = self.zoom_combo_box.currentText()
+        if mode not in ["X Axis", "Both"]:
+            self.plot_widget1.setXRange(self.t - 10, self.t)
 
 
     def toggle_visbile_signA(self,state):
