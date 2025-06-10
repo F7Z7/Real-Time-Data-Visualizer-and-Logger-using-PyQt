@@ -139,9 +139,9 @@ class MainWindow(QMainWindow):
         self.apply_zoom(zoom_in=False)
 
     def reset_zoom(self):
-        self.plot_widget1.setXRange(0,10)
+        self.plot_widget1.setXRange(self.t,self.t+10)
         self.plot_widget1.setYRange(-1,1)
-        self.plot_widget2.setXRange(0,10)
+        self.plot_widget2.setXRange(self.t,self.t+10)
         self.plot_widget2.setYRange(-1,1)
 
     def update_plot(self):
