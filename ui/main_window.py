@@ -46,11 +46,12 @@ class MainWindow(QMainWindow):
         self.reset_button = QPushButton("Reset")
         self.zoom_in_button = QPushButton("Zoom In")
         self.zoom_out_button = QPushButton("Zoom Out")
+        self.reset_zoom_button = QPushButton("Reset Zoom")
         # combo boxes
         self.zoom_combo_box = QComboBox()
         self.zoom_combo_box.addItems(["X Axis", "Y Axis", "Both"])
         self.zoom_combo_box.setCurrentIndex(2)  # initail selection to both axises
-        for btn in [self.start_button, self.stop_button, self.reset_button,self.zoom_in_button,self.zoom_out_button]:
+        for btn in [self.start_button, self.stop_button, self.reset_button,self.zoom_in_button,self.zoom_out_button,self.reset_zoom_button]:
             button_layout.addWidget(btn) #adding buttons to this layout
             btn.setFixedSize(100, 30)
         button_layout.setSpacing(10)
@@ -77,6 +78,7 @@ class MainWindow(QMainWindow):
         self.reset_button.clicked.connect(self.reset_plot)
         self.zoom_in_button.clicked.connect(self.zoom_in)
         self.zoom_out_button.clicked.connect(self.zoom_out)
+        self.reset_zoom_button.clicked.connect(self.reset_zoom)
         #for toggling viisbility of signals
         self.signal_check[0].stateChanged.connect(self.toggle_visbile_signA)
         self.signal_check[1].stateChanged.connect(self.toggle_visbile_signB)
@@ -136,6 +138,11 @@ class MainWindow(QMainWindow):
     def zoom_out(self):
         self.apply_zoom(zoom_in=False)
 
+    def reset_zoom(self):
+        self.plot_widget1.setXRange(0,10)
+        self.plot_widget1.setYRange(-1,1)
+        self.plot_widget2.setXRange(0,10)
+        self.plot_widget2.setYRange(-1,1)
 
     def update_plot(self):
         self.t+=self.dt #update time
@@ -156,6 +163,7 @@ class MainWindow(QMainWindow):
         mode = self.zoom_combo_box.currentText()
         if mode not in ["X Axis", "Both"]:
             self.plot_widget1.setXRange(self.t - 10, self.t)
+            self.plot_widget2.setXRange(self.t - 10, self.t)
 
 
     def toggle_visbile_signA(self,state):
