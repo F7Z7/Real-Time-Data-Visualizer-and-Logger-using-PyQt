@@ -1,7 +1,7 @@
 import numpy as np
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
-    QHBoxLayout, QLabel, QFrame, QCheckBox
+    QHBoxLayout, QLabel, QFrame, QCheckBox,QComboBox
 )
 from PyQt5.QtCore import Qt,QTimer
 import pyqtgraph as pg
@@ -46,8 +46,17 @@ class MainWindow(QMainWindow):
         self.reset_button = QPushButton("Reset")
         self.zoom_in_button = QPushButton("Zoom In")
         self.zoom_out_button = QPushButton("Zoom Out")
+        # combo boxes
+        self.zoom_combo_box = QComboBox()
+        self.zoom_combo_box.addItems(["X Axis", "Y Axis", "Both"])
+        self.zoom_combo_box.setCurrentIndex(2)  # initail selection to both axises
         for btn in [self.start_button, self.stop_button, self.reset_button,self.zoom_in_button,self.zoom_out_button]:
             button_layout.addWidget(btn) #adding buttons to this layout
+            btn.setFixedSize(100, 30)
+        button_layout.setSpacing(10)
+        button_layout.setAlignment(Qt.AlignHCenter )
+        button_layout.addWidget(QLabel("Zoom Mode"))
+        button_layout.addWidget(self.zoom_combo_box)
 
         layout.addLayout(button_layout) #placing this inside amin window
 
@@ -59,6 +68,8 @@ class MainWindow(QMainWindow):
             check_box.setChecked(True)
             self.signal_check.append(check_box)
             layout.addWidget(check_box)#adding the check box to the layout
+
+
         #giving event handlers
 
         self.start_button.clicked.connect(self.on_click_start)
