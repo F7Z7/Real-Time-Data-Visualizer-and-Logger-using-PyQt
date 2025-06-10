@@ -10,7 +10,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Real-Time-Visualiser")
-        self.setGeometry(300,400,500,500)
+        self.setMinimumSize(1100, 800)
         self.initUI()
         # self.auto_scroll = True
     def initUI(self):
@@ -20,16 +20,24 @@ class MainWindow(QMainWindow):
 
         #grpah
 
-        self.plot_widget=pg.PlotWidget()
-        layout.addWidget(self.plot_widget)
-        self.plot_widget.setBackground('w')
-        self.plot_widget.setFixedHeight(300)
-        self.plot_widget.showGrid(x=True, y=True)
+        self.plot_widget1=pg.PlotWidget()
+        layout.addWidget(self.plot_widget1)
+        self.plot_widget1.setBackground('w')
+        self.plot_widget1.setFixedHeight(300)
+        self.plot_widget1.showGrid(x=True, y=True)
+
+        self.plot_widget2 = pg.PlotWidget()
+        layout.addWidget(self.plot_widget2)
+        self.plot_widget2.setBackground('w')
+        self.plot_widget2.setFixedHeight(300)
+        self.plot_widget2.showGrid(x=True, y=True)
 
         #sine and cos wave
-        self.plot_widget.addLegend()
-        self.sine_curve = self.plot_widget.plot(pen=pg.mkPen(color='r',width=5), name="Sine")
-        self.cos_curve = self.plot_widget.plot(pen=pg.mkPen(color='b',width=5), name="Cosine")
+        self.plot_widget1.addLegend()
+        self.sine_curve = self.plot_widget1.plot(pen=pg.mkPen(color='r',width=5), name="Sine")
+        self.plot_widget2.addLegend()
+
+        self.cos_curve = self.plot_widget2.plot(pen=pg.mkPen(color='b',width=5), name="Cosine")
 
         #buttons:Start-reset-stop
         button_layout = QHBoxLayout()
@@ -80,20 +88,20 @@ class MainWindow(QMainWindow):
         self.cos_data.clear()#clearing data
         self.sine_curve.clear()
         self.cos_curve.clear()
-        self.plot_widget.setXRange(0, 10)
-        self.plot_widget.setYRange(-1, 1)#so that the axis reset
+        self.plot_widget1.setXRange(0, 10)
+        self.plot_widget1.setYRange(-1, 1)#so that the axis reset
 
     def zoom_in(self):
-        xmin, xmax = self.plot_widget.viewRange()[0]
+        xmin, xmax = self.plot_widget1.viewRange()[0]
         center = (xmin + xmax) / 2
         width = (xmax - xmin) * 0.5  # zoom in by 50%
-        self.plot_widget.setXRange(center - width / 2, center + width / 2)
+        self.plot_widget1.setXRange(center - width / 2, center + width / 2)
 
     def zoom_out(self):
-        xmin, xmax = self.plot_widget.viewRange()[0]
+        xmin, xmax = self.plot_widget1.viewRange()[0]
         center = (xmin + xmax) / 2
         width = (xmax - xmin) * 2  # zoom out by 2x
-        self.plot_widget.setXRange(center - width / 2, center + width / 2)
+        self.plot_widget1.setXRange(center - width / 2, center + width / 2)
 
     def update_plot(self):
         self.t+=self.dt #update time
@@ -111,6 +119,6 @@ class MainWindow(QMainWindow):
         self.sine_curve.setData(self.x, self.sine_data) #new data given
         self.cos_curve.setData(self.x, self.cos_data)
 
-        self.plot_widget.setXRange(self.t - 10, self.t)
-        self.plot_widget.setYRange(-1, 1)
+        self.plot_widget1.setXRange(self.t - 10, self.t)
+        self.plot_widget1.setYRange(-1, 1)
 
