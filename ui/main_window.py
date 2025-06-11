@@ -3,8 +3,9 @@ from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
     QHBoxLayout, QLabel, QFrame, QCheckBox,QComboBox,QSplitter
 )
-from PyQt5.QtCore import Qt,QTimer
+from PyQt5.QtCore import Qt,QTimer,QThread
 import pyqtgraph as pg
+from src.data_worker import DataWorker
 from src.plotting import sine_graph,cos_graph
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -13,6 +14,14 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1100, 800)
         self.initUI()
         # self.auto_scroll = True
+        self.worker_thread = QThread() #create a thread
+        self.worker=DataWorker(dt=self.dt)#initate a worker
+        self.worker.moveToThread(self.worker_thread)#moving it to parent thread
+        self.worker.data_ready.connect(self.update_plot)
+        self.worker_thread.started.connect(self.worker.start_work)
+
+        self.destroyed.connect(self.clean_up_worker)
+
     def initUI(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -37,6 +46,7 @@ class MainWindow(QMainWindow):
         #sine and cos wave
         self.plot_widget1.addLegend()
         self.sine_curve = self.plot_widget1.plot(pen=pg.mkPen(color='r',width=5), name="Sine")
+
         self.plot_widget2.addLegend()
 
         self.cos_curve = self.plot_widget2.plot(pen=pg.mkPen(color='b',width=5), name="Cosine")
@@ -100,12 +110,14 @@ class MainWindow(QMainWindow):
         graphLayout.setSizes([1, 1, 1])
         layout.addWidget(graphLayout)
 
-        self.plot_widget1.setTitle(" Sine Signal")
-        self.plot_widget2.setTitle("Cosine Signal")
-        self.plot_widget3.setTitle("XY Plot")
-
         for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
             plot.setContentsMargins(5, 5, 5, 5)
+            plot.setLabel("bottom", "Time",units ='sec',**{'color':'black',"font-size":"10pt"}) #pt instead of px
+            plot.setLabel("left", "Amplitude",**{'color':'black',"font-size":"10pt"})
+
+        self.plot_widget3.setLabel("left", "Cos(t)",**{'color':'blue',"font-size":"10pt"})
+        self.plot_widget3.setLabel("bottom", "Sin(t)",**{'color':'red',"font-size":"10pt"})
+
 
         #giving event handlers
 
@@ -141,9 +153,13 @@ class MainWindow(QMainWindow):
 
 #functionalities
     def on_click_start(self):
-        self.timer.start(50)
+        if not self.worker_thread.isRunning(): #check if its already running
+            self.worker_thread.start()
+
     def on_click_stop(self):
-        self.timer.stop()
+        self.worker.stop_work()
+        self.worker_thread.quit()
+        self.worker_thread.wait()
     def reset_plot(self):
         #full reset to 0
         self.timer.stop()
@@ -187,14 +203,14 @@ class MainWindow(QMainWindow):
         # self.plot_widget2.setXRange(self.t,self.t+10)
         # self.plot_widget2.setYRange(-1,1)
         for plot in [self.plot_widget1, self.plot_widget2,self.plot_widget3]:
-            plot.setXRange(self.t,self.t+10)
-            plot.setYRange(-1,1)
+            plot.enableAutoRange(axis=pg.ViewBox.XYAxes, enable=True)
 
-    def update_plot(self):
-        self.t+=self.dt #update time
-        self.x.append(self.t)
-        self.sine_data.append(sine_graph(self.t))
-        self.cos_data.append(cos_graph(self.t))
+
+    def update_plot(self,t,sin,cos):
+        self.t #update time
+        self.x.append(t)
+        self.sine_data.append(sin)
+        self.cos_data.append(cos)
 
 
         if len(self.x) > self.max_points:
@@ -211,6 +227,11 @@ class MainWindow(QMainWindow):
             self.plot_widget1.setXRange(self.t - 10, self.t)
             self.plot_widget2.setXRange(self.t - 10, self.t)
 
+    def clean_up_worker(self):
+        if self.worker_thread.isRunning():
+            self.worker.stop_work()
+            self.worker_thread.quit()
+            self.worker_thread.wait()
 
     def toggle_visbile_signA(self,state):
         if(state==Qt.Checked):
