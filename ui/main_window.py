@@ -69,12 +69,12 @@ class MainWindow(QMainWindow):
         self.reset_button = QPushButton("Reset")
         self.zoom_in_button = QPushButton("Zoom In")
         self.zoom_out_button = QPushButton("Zoom Out")
-        self.reset_zoom_button = QPushButton("Reset Zoom")
+        self.auto_scale_button = QPushButton("Auto-Scale")
         # combo boxes
         self.zoom_combo_box = QComboBox()
         self.zoom_combo_box.addItems(["X Axis", "Y Axis", "Both"])
         self.zoom_combo_box.setCurrentIndex(2)  # initail selection to both axises
-        for btn in [self.start_button, self.stop_button, self.reset_button,self.zoom_in_button,self.zoom_out_button,self.reset_zoom_button]:
+        for btn in [self.start_button, self.stop_button, self.reset_button,self.zoom_in_button,self.zoom_out_button,self.auto_scale_button]:
             button_layout.addWidget(btn) #adding buttons to this layout
             btn.setFixedSize(100, 30)
         button_layout.setSpacing(10)
@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
         self.reset_button.clicked.connect(self.reset_plot)
         self.zoom_in_button.clicked.connect(self.zoom_in)
         self.zoom_out_button.clicked.connect(self.zoom_out)
-        self.reset_zoom_button.clicked.connect(self.reset_zoom)
+        self.auto_scale_button.clicked.connect(self.auto_scale)
 
         #for toggling viisbility of signals
 
@@ -198,7 +198,7 @@ class MainWindow(QMainWindow):
     def zoom_out(self):
         self.apply_zoom(zoom_in=False)
 
-    def reset_zoom(self):
+    def auto_scale(self):
         # self.plot_widget1.setXRange(self.t,self.t+10)
         # self.plot_widget1.setYRange(-1,1)
         # self.plot_widget2.setXRange(self.t,self.t+10)
