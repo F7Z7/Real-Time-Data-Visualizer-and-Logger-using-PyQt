@@ -16,7 +16,9 @@ class MainWindow(QMainWindow):
     def initUI(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+        layout = QHBoxLayout(central_widget)
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(10)
 
         #grpah
 
@@ -50,8 +52,8 @@ class MainWindow(QMainWindow):
         self.x_y_plot=self.plot_widget3.plot(pen=pg.mkPen(color='#ff32cc',width=5), name="X vs Y")
 
 
-        #buttons:Start-reset-stop
-        button_layout = QHBoxLayout()
+        #buttons:Start-reset-stop-checkboxes
+        button_layout = QVBoxLayout()
         self.start_button = QPushButton("Start")
         self.stop_button = QPushButton("Stop")
         self.reset_button = QPushButton("Reset")
@@ -66,11 +68,12 @@ class MainWindow(QMainWindow):
             button_layout.addWidget(btn) #adding buttons to this layout
             btn.setFixedSize(100, 30)
         button_layout.setSpacing(10)
-        button_layout.setAlignment(Qt.AlignHCenter )
+        button_layout.setAlignment(Qt.AlignVCenter )
         button_layout.addWidget(QLabel("Zoom Mode"))
         button_layout.addWidget(self.zoom_combo_box)
 
-        layout.addLayout(button_layout) #placing this inside amin window
+
+
 
         #chechk boxes for toggling visibilities
         self.choices=["Show Signal A","Show Signal B","Show X-Y Plot"]
@@ -79,8 +82,17 @@ class MainWindow(QMainWindow):
             check_box=QCheckBox(choices)
             check_box.setChecked(True)
             self.signal_check.append(check_box)
-            layout.addWidget(check_box)#adding the check box to the layout
+            button_layout.addWidget(check_box)#adding the check box to the layout
 
+        button_layout.setAlignment(Qt.AlignTop | Qt.AlignLeft)
+        button_layout.setContentsMargins(10, 10, 10, 10)
+        button_layout.setSpacing(12)
+
+        control_widget = QWidget()
+        control_widget.setLayout(button_layout)
+        control_widget.setFixedWidth(160)
+
+        layout.addWidget(control_widget)
         graphLayout=QSplitter(Qt.Orientation.Vertical)
         for plots in [self.plot_widget1,self.plot_widget2,self.plot_widget3]:
             graphLayout.addWidget(plots)
@@ -103,11 +115,15 @@ class MainWindow(QMainWindow):
         self.zoom_in_button.clicked.connect(self.zoom_in)
         self.zoom_out_button.clicked.connect(self.zoom_out)
         self.reset_zoom_button.clicked.connect(self.reset_zoom)
+
         #for toggling viisbility of signals
+
         self.signal_check[0].stateChanged.connect(self.toggle_visbile_signA)
         self.signal_check[1].stateChanged.connect(self.toggle_visbile_signB)
         self.signal_check[2].stateChanged.connect(self.toggle_visbile_x_y_plot)
 
+
+#timer connections
         self.timer=QTimer()
         self.timer.timeout.connect(self.update_plot)
 
@@ -122,9 +138,8 @@ class MainWindow(QMainWindow):
         self.xmax=0
         self.center=0
 
-    control_panel = QVBoxLayout()
-    control_panel.setSpacing(15)
 
+#functionalities
     def on_click_start(self):
         self.timer.start(50)
     def on_click_stop(self):
