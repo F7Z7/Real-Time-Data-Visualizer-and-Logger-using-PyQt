@@ -39,6 +39,17 @@ class MainWindow(QMainWindow):
 
         self.cos_curve = self.plot_widget2.plot(pen=pg.mkPen(color='b',width=5), name="Cosine")
 
+        #for x,y plotting
+        self.plot_widget3 = pg.PlotWidget()
+        self.plot_widget3.setBackground('w')
+        layout.addWidget(self.plot_widget3)
+        self.plot_widget3.setFixedHeight(300)
+        self.plot_widget3.showGrid(x=True, y=True)
+        self.plot_widget3.addLegend()
+
+        self.x_y_plot=self.plot_widget3.plot(pen=pg.mkPen(color='#ff32cc',width=5), name="X vs Y")
+
+
         #buttons:Start-reset-stop
         button_layout = QHBoxLayout()
         self.start_button = QPushButton("Start")
@@ -62,7 +73,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(button_layout) #placing this inside amin window
 
         #chechk boxes for toggling visibilities
-        self.choices=["Show Signal A","Show Signal B "]
+        self.choices=["Show Signal A","Show Signal B","Show X-Y Plot"]
         self.signal_check=[]
         for choices in self.choices:
             check_box=QCheckBox(choices)
@@ -82,6 +93,7 @@ class MainWindow(QMainWindow):
         #for toggling viisbility of signals
         self.signal_check[0].stateChanged.connect(self.toggle_visbile_signA)
         self.signal_check[1].stateChanged.connect(self.toggle_visbile_signB)
+        self.signal_check[2].stateChanged.connect(self.toggle_visbile_x_y_plot)
 
         self.timer=QTimer()
         self.timer.timeout.connect(self.update_plot)
@@ -159,7 +171,7 @@ class MainWindow(QMainWindow):
 
         self.sine_curve.setData(self.x, self.sine_data) #new data given
         self.cos_curve.setData(self.x, self.cos_data)
-
+        self.x_y_plot.setData(self.sine_data, self.cos_data)
         mode = self.zoom_combo_box.currentText()
         if mode not in ["X Axis", "Both"]:
             self.plot_widget1.setXRange(self.t - 10, self.t)
@@ -177,3 +189,10 @@ class MainWindow(QMainWindow):
             self.cos_curve.setVisible(True)
         else:
             self.cos_curve.setVisible(False)
+
+    def toggle_visbile_x_y_plot(self,state):
+        if(state==Qt.Checked):
+            self.x_y_plot.setVisible(True)
+
+        else:
+            self.x_y_plot.setVisible(False)
