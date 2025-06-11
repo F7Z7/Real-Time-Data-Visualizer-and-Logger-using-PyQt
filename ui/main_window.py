@@ -114,6 +114,7 @@ class MainWindow(QMainWindow):
             plot.setContentsMargins(5, 5, 5, 5)
             plot.setLabel("bottom", "Time",units ='sec',**{'color':'black',"font-size":"10pt"}) #pt instead of px
             plot.setLabel("left", "Amplitude",**{'color':'black',"font-size":"10pt"})
+            plot.getViewBox().setMouseMode(pg.ViewBox.RectMode)
 
         self.plot_widget3.setLabel("left", "Cos(t)",**{'color':'blue',"font-size":"10pt"})
         self.plot_widget3.setLabel("bottom", "Sin(t)",**{'color':'red',"font-size":"10pt"})
