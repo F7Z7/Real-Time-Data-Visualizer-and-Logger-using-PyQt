@@ -1,7 +1,7 @@
 import numpy as np
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
-    QHBoxLayout, QLabel, QFrame, QCheckBox,QComboBox
+    QHBoxLayout, QLabel, QFrame, QCheckBox,QComboBox,QSplitter
 )
 from PyQt5.QtCore import Qt,QTimer
 import pyqtgraph as pg
@@ -81,6 +81,19 @@ class MainWindow(QMainWindow):
             self.signal_check.append(check_box)
             layout.addWidget(check_box)#adding the check box to the layout
 
+        graphLayout=QSplitter(Qt.Orientation.Vertical)
+        for plots in [self.plot_widget1,self.plot_widget2,self.plot_widget3]:
+            graphLayout.addWidget(plots)
+
+        graphLayout.setSizes([1, 1, 1])
+        layout.addWidget(graphLayout)
+
+        self.plot_widget1.setTitle(" Sine Signal")
+        self.plot_widget2.setTitle("Cosine Signal")
+        self.plot_widget3.setTitle("XY Plot")
+
+        for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
+            plot.setContentsMargins(5, 5, 5, 5)
 
         #giving event handlers
 
@@ -109,6 +122,8 @@ class MainWindow(QMainWindow):
         self.xmax=0
         self.center=0
 
+    control_panel = QVBoxLayout()
+    control_panel.setSpacing(15)
 
     def on_click_start(self):
         self.timer.start(50)
