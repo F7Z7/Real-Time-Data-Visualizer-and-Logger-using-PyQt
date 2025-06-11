@@ -148,22 +148,23 @@ class MainWindow(QMainWindow):
         #full reset to 0
         self.timer.stop()
         self.t=0
-        self.x.clear()
-        self.sine_data.clear()
-        self.cos_data.clear()#clearing data
-        self.sine_curve.clear()
-        self.cos_curve.clear()
-        self.plot_widget1.setXRange(0, 10)
-        self.plot_widget1.setYRange(-1, 1)#so that the axis reset
-        self.plot_widget2.setXRange(0, 10)
-        self.plot_widget2.setYRange(-1, 1)
+        # self.x.clear()
+        # self.sine_data.clear()
+        # self.cos_data.clear()#clearing data
+        # self.sine_curve.clear()
+        # self.cos_curve.clear()
+        for curve_data in [self.sine_data,self.cos_data,self.sine_curve,self.cos_curve,self.x,self.x_y_plot]:
+            curve_data.clear()
 
+        for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
+            plot.setXRange(0,10)
+            plot.setYRange(-1,1)
 
     #new zoom logic
     def apply_zoom(self,zoom_in:bool):
         factor = 0.5 if zoom_in else 2
         mode = self.zoom_combo_box.currentText()
-        for plot_widget in [self.plot_widget1, self.plot_widget2]:
+        for plot_widget in [self.plot_widget1, self.plot_widget2,self.plot_widget3]:
             x_range, y_range = plot_widget.viewRange()
             x_center = (x_range[0] + x_range[1]) / 2
             y_center = (y_range[0] + y_range[1]) / 2
@@ -181,10 +182,13 @@ class MainWindow(QMainWindow):
         self.apply_zoom(zoom_in=False)
 
     def reset_zoom(self):
-        self.plot_widget1.setXRange(self.t,self.t+10)
-        self.plot_widget1.setYRange(-1,1)
-        self.plot_widget2.setXRange(self.t,self.t+10)
-        self.plot_widget2.setYRange(-1,1)
+        # self.plot_widget1.setXRange(self.t,self.t+10)
+        # self.plot_widget1.setYRange(-1,1)
+        # self.plot_widget2.setXRange(self.t,self.t+10)
+        # self.plot_widget2.setYRange(-1,1)
+        for plot in [self.plot_widget1, self.plot_widget2,self.plot_widget3]:
+            plot.setXRange(self.t,self.t+10)
+            plot.setYRange(-1,1)
 
     def update_plot(self):
         self.t+=self.dt #update time
