@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Real-Time-Visualiser")
-        self.setMinimumSize(1100, 800)
+        self.setMinimumSize(1100, 1100)
         self.initUI()
         # self.auto_scroll = True
         self.worker_thread = QThread() #create a thread
@@ -45,11 +45,11 @@ class MainWindow(QMainWindow):
 
         #sine and cos wave
         self.plot_widget1.addLegend()
-        self.sine_curve = self.plot_widget1.plot(pen=pg.mkPen(color='r',width=5), name="Sine")
+        self.sine_curve = self.plot_widget1.plot(pen=pg.mkPen(color='r',width=5), name="Sine" ,antiAlias=True)
 
         self.plot_widget2.addLegend()
 
-        self.cos_curve = self.plot_widget2.plot(pen=pg.mkPen(color='b',width=5), name="Cosine")
+        self.cos_curve = self.plot_widget2.plot(pen=pg.mkPen(color='b',width=5), name="Cosine" ,antiAlias=True)
 
         #for x,y plotting
         self.plot_widget3 = pg.PlotWidget()
@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
         self.plot_widget3.showGrid(x=True, y=True)
         self.plot_widget3.addLegend()
 
-        self.x_y_plot=self.plot_widget3.plot(pen=pg.mkPen(color='#ff32cc',width=5), name="X vs Y")
+        self.x_y_plot=self.plot_widget3.plot(pen=pg.mkPen(color='#ff32cc',width=5), name="X vs Y", antialias=True )
 
 
         #buttons:Start-reset-stop-checkboxes
