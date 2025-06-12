@@ -1,7 +1,7 @@
 import numpy as np
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
-    QHBoxLayout, QLabel, QFrame, QCheckBox,QComboBox,QSplitter
+    QHBoxLayout, QLabel, QFrame, QCheckBox, QComboBox, QSplitter, QLineEdit
 )
 from PyQt5.QtCore import Qt,QTimer,QThread
 import pyqtgraph as pg
@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
         layout = QHBoxLayout(central_widget)
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(10)
+
 
         #grpah
 
@@ -82,8 +83,14 @@ class MainWindow(QMainWindow):
         button_layout.addWidget(QLabel("Zoom Mode"))
         button_layout.addWidget(self.zoom_combo_box)
 
+        input_method_select=QHBoxLayout()
 
-
+        self.input_method=QComboBox()
+        self.input_method.addItem("Select type of input")
+        self.input_method.addItems(["User Defined Signals","Pre Defined Signals"])
+        self.input_method.setCurrentIndex(0)
+        input_method_select.addWidget(self.input_method)
+        button_layout.addLayout(input_method_select)
 
         #chechk boxes for toggling visibilities
         self.choices=["Show Signal A","Show Signal B","Show X-Y Plot"]
@@ -119,6 +126,21 @@ class MainWindow(QMainWindow):
         self.plot_widget3.setLabel("left", "Cos(t)",**{'color':'blue',"font-size":"10pt"})
         self.plot_widget3.setLabel("bottom", "Sin(t)",**{'color':'red',"font-size":"10pt"})
 
+        #user inputs
+        if self.input_method.currentText() == "User Defined Signals":
+            user_input=QVBoxLayout()
+            self.input_1 = QLineEdit()
+            self.label_1 = QLabel("Input 1:")
+            self.input_2 = QLineEdit()
+            self.label_2 = QLabel("Input 2:")
+            for label, inputs in [(self.label_1, self.input_1), (self.label_2, self.input_2)]:
+                user_input.addWidget(label)
+                user_input.addWidget(inputs)
+            button_layout.addLayout(user_input)
+        else:
+            if hasattr(self, 'input_1') and hasattr(self, 'input_2'):
+                for inputs in [self.input_1, self.input_2]:
+                    inputs.setEnabled(False)
 
         #giving event handlers
 
