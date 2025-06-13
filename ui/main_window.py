@@ -60,53 +60,85 @@ class MainWindow(QMainWindow):
 
     def setup_controls(self):
         control_layout = QVBoxLayout()
-        control_layout.setSpacing(5)  # Equal spacing between elements
-        control_layout.setContentsMargins(5, 5,5,5)
+        control_layout.setSpacing(5)
+        control_layout.setContentsMargins(5, 5, 5, 5)
         control_layout.setAlignment(Qt.AlignTop)
-        # --- Buttons ---
-        buttons = [
-            ("Start", self.on_click_start),
-            ("Stop", self.on_click_stop),
-            ("Reset", self.reset_plot),
-            ("Zoom In", self.zoom_in),
-            ("Zoom Out", self.zoom_out),
-            ("Auto-Scale", self.auto_scale)
+
+
+        user_input_layout = QVBoxLayout()
+        user_input_layout.setSpacing(5)
+
+        self.user_input1=QComboBox()
+        self.user_input2=QComboBox()
+        signals = [
+            "Select a Signal",
+            "Sine",
+            "Cosine",
+            "Tangent",
+            "Cosecant",
+            "Secant",
+            "Cotangent",
+            "Triangle",
+            "Square"
         ]
 
-        for label, slot in buttons:
-            btn = QPushButton(label)
-            btn.setFixedSize(120, 30)
-            btn.clicked.connect(slot)
-            control_layout.addWidget(btn)
+        self.user_input1.addItems(signals)
+        self.user_input2.addItems(signals)
+        for lablel,input in [("Signal A",self.user_input1), ("Signal B",self.user_input2)]:
+            user_input_layout.addWidget(QLabel(lablel))
+            user_input_layout.addWidget(input)
+        control_layout.addLayout(user_input_layout)
+        def create_button_row(pairs):
+            row = QHBoxLayout()
+            for label, slot in pairs:
+                btn = QPushButton(label)
+                btn.setFixedSize(90, 30)
+                btn.clicked.connect(slot)
+                row.addWidget(btn)
+            return row
+
+        # Grouped button rows
+        button_groups = [
+            [("Start", self.on_click_start), ("Stop", self.on_click_stop)],
+            [("Zoom In", self.zoom_in), ("Zoom Out", self.zoom_out)],
+            [("Auto-Scale", self.auto_scale), ("Reset", self.reset_plot)],
+        ]
+
+        for group in button_groups:
+            row_layout = create_button_row(group)
+            control_layout.addLayout(row_layout)
 
         # --- Zoom Mode ComboBox ---
-        zoom_label = QLabel("Zoom Mode")
+        zoom_row = QVBoxLayout()
+        zoom_label = QLabel("Zoom Mode:")
         self.zoom_combo_box = QComboBox()
         self.zoom_combo_box.addItems(["X Axis", "Y Axis", "Both"])
         self.zoom_combo_box.setCurrentIndex(2)
+        self.zoom_combo_box.setFixedWidth(150)
+        zoom_row.addWidget(zoom_label)
+        zoom_row.addWidget(self.zoom_combo_box)
+        control_layout.addLayout(zoom_row)
 
-        control_layout.addWidget(zoom_label)
-        control_layout.addWidget(self.zoom_combo_box)
-
-
-        # --- Signal Visibility Checkboxes ---
+        # --- Signal Visibility Checkboxes in one row ---
+        signal_row = QVBoxLayout()
         self.choices = ["Show Signal A", "Show Signal B", "Show X-Y Plot"]
         self.signal_check = []
 
-        for text in self.choices:
+        for i, text in enumerate(self.choices):
             cb = QCheckBox(text)
             cb.setChecked(True)
             self.signal_check.append(cb)
-            control_layout.addWidget(cb)
+            signal_row.addWidget(cb)
 
         self.signal_check[0].stateChanged.connect(self.toggle_visbile_signA)
         self.signal_check[1].stateChanged.connect(self.toggle_visbile_signB)
         self.signal_check[2].stateChanged.connect(self.toggle_visbile_x_y_plot)
+        control_layout.addLayout(signal_row)
 
-        # Finalize
+        # Final container
         container = QWidget()
         container.setLayout(control_layout)
-        container.setFixedWidth(200)
+        container.setFixedWidth(240)
         return container
 
     def setup_plots(self):
