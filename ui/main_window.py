@@ -88,20 +88,6 @@ class MainWindow(QMainWindow):
         control_layout.addWidget(zoom_label)
         control_layout.addWidget(self.zoom_combo_box)
 
-        # --- Input Method Selection ---
-        input_label = QLabel("Input Preferred Method")
-        self.input_method = QComboBox()
-        self.input_method.addItems(["Select type of input", "User Defined Signals", "Pre Defined Signals"])
-        self.input_method.setCurrentIndex(0)
-        self.input_method.currentIndexChanged.connect(self.handle_input_change)
-
-        control_layout.addWidget(input_label)
-        control_layout.addWidget(self.input_method)
-
-        # --- Placeholder for Dynamic Input Fields ---
-        self.user_input_layout = QVBoxLayout()
-        self.user_input_layout.setSpacing(5)
-        control_layout.addLayout(self.user_input_layout)
 
         # --- Signal Visibility Checkboxes ---
         self.choices = ["Show Signal A", "Show Signal B", "Show X-Y Plot"]
@@ -195,14 +181,16 @@ class MainWindow(QMainWindow):
             self.plot_widget2.setXRange(self.t - 10, self.t)
 
     def reset_plot(self):
-        self.timer.stop()
-        self.t = 0
+
         self.x.clear()
         self.sine_data.clear()
         self.cos_data.clear()
         self.sine_curve.clear()
         self.cos_curve.clear()
         self.x_y_plot.clear()
+        self.worker.stop_work()
+        self.worker_thread.quit()
+        self.worker_thread.wait()
 
         for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
             plot.setXRange(0, 10)
@@ -245,25 +233,3 @@ class MainWindow(QMainWindow):
     def toggle_visbile_x_y_plot(self, state):
         self.x_y_plot.setVisible(state == Qt.Checked)
 
-    # -------------------------
-    # Input Method Handling
-    # -------------------------
-    def handle_input_change(self):
-        while self.user_input_layout.count():
-            child = self.user_input_layout.takeAt(0)
-            if child.widget():
-                child.widget().deleteLater()
-
-        if self.input_method.currentText() == "User Defined Signals":
-            self.input_1 = QLineEdit()
-            self.label_1 = QLabel("Input 1:")
-            self.input_2 = QLineEdit()
-            self.label_2 = QLabel("Input 2:")
-            for label, box in [(self.label_1, self.input_1), (self.label_2, self.input_2)]:
-                self.user_input_layout.addWidget(label)
-                self.user_input_layout.addWidget(box)
-
-        elif self.input_method.currentText() == "Pre Defined Signals":
-            user_input = QComboBox()
-            user_input.addItems(["Sine", "Cos", "Tan", "Cot", "Sec", "Cosec"])
-            self.user_input_layout.addWidget(user_input)
