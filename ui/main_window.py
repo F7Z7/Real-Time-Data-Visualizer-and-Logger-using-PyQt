@@ -102,6 +102,14 @@ class MainWindow(QMainWindow):
         self.constant_input.setPlaceholderText("Optional Constants eg:2,1.5")
         math_layout.addWidget(self.constant_input)
 
+        self.preview_btn=QPushButton("Preview the expression")
+        math_layout.addWidget(self.preview_btn)
+        math_layout.addWidget(QLabel("Preview"))
+        self.preview_input=QLineEdit()
+        self.preview_input.setEnabled(False)
+        math_layout.addWidget(self.preview_input)
+
+
         control_layout.addLayout(math_layout)
         def create_button_row(pairs):
             row = QHBoxLayout()
