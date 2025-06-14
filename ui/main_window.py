@@ -28,7 +28,6 @@ class MainWindow(QMainWindow):
         self.worker = DataWorker(dt=self.dt)
         self.worker.moveToThread(self.worker_thread)
         self.worker.data_ready.connect(self.update_plot)
-        self.worker_thread.started.connect(self.worker.start_work)
         self.destroyed.connect(self.clean_up_worker)
 
     def initUI(self):
@@ -164,14 +163,16 @@ class MainWindow(QMainWindow):
             self.worker = DataWorker(dt=self.dt)
             self.worker.moveToThread(self.worker_thread)
             self.worker.data_ready.connect(self.update_plot)
-            self.worker_thread.started.connect(lambda: self.worker.start_work(signal1, signal2))
 
             self.worker_thread.start()
+            self.worker_thread.started.connect(lambda: self.worker.start_signal.emit(signal1, signal2))
 
     def on_click_stop(self):
-        self.worker.stop_work()
-        self.worker_thread.quit()
-        self.worker_thread.wait()
+        if hasattr(self, "worker") and self.worker:
+            self.worker.stop_work()
+        if hasattr(self, "worker_thread") and self.worker_thread.isRunning():
+            self.worker_thread.quit()
+            self.worker_thread.wait()
 
     def clean_up_worker(self):
         if self.worker_thread.isRunning():
