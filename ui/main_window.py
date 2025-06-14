@@ -88,7 +88,21 @@ class MainWindow(QMainWindow):
             user_input_layout.addWidget(box)
 
         control_layout.addLayout(user_input_layout)
+        math_layout=QVBoxLayout()
+        math_layout.addWidget(QLabel("Math Operation Selection"))
+        operation_layout = QHBoxLayout()
+        operation_layout.setSpacing(5)
+        self.operations=QComboBox()
+        self.operations.addItems(["Choose an operation","+", "-", "*", "/", "sin", "cos", "A+B", "A*2", "sin(A) + 2*B"])
+        operation_layout.addWidget(self.operations)
+        math_layout.addLayout(operation_layout)
 
+        math_layout.addWidget(QLabel("Optional Constants"))
+        self.constant_input = QLineEdit()
+        self.constant_input.setPlaceholderText("Optional Constants eg:2,1.5")
+        math_layout.addWidget(self.constant_input)
+
+        control_layout.addLayout(math_layout)
         def create_button_row(pairs):
             row = QHBoxLayout()
             for label, slot in pairs:
