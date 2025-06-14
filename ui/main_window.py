@@ -23,17 +23,24 @@ class MainWindow(QMainWindow):
         self.max_points = 200
 
         self.initUI()
+        self.setup_worker()
+        # declaring flags
+        self.plot_start = False
+        self.plot_stop = False
+        self.is_reset = False
 
+    def setup_worker(self):
+        # initialise worker and thread
         self.worker_thread = QThread()
         self.worker = DataWorker(dt=self.dt)
         self.worker.moveToThread(self.worker_thread)
         self.worker.data_ready.connect(self.update_plot)
         self.destroyed.connect(self.clean_up_worker)
 
-#declaring flags
-        self.plot_start = False
-        self.plot_stop = False
-        self.is_reset=False
+
+
+
+
     def initUI(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -171,9 +178,9 @@ class MainWindow(QMainWindow):
             self.plot_stop = False
             self.is_reset = False
 
+            if not self.worker_thread.isRunning():
+                self.worker_thread.start()
 
-
-            self.worker_thread.start()
             self.worker.start_signal.emit(signal1, signal2)
     def on_click_stop(self):
         if not self.plot_start:
@@ -219,6 +226,12 @@ class MainWindow(QMainWindow):
         self.plot_start = False
         self.is_reset = True
 
+#if thread is reset it should also stop adn delte the thread
+        if hasattr(self, "worker") and self.worker:
+            self.worker.stop_work()
+        if hasattr(self, "worker_thread") and self.worker_thread.isRunning():
+            self.worker_thread.quit()
+            self.worker_thread.wait()
 
         self.x.clear()
         self.signal1_data.clear()
@@ -228,26 +241,20 @@ class MainWindow(QMainWindow):
         self.signal2_curve.clear()
         self.xy_plot.clear()
 
-        if self.worker:
-            self.worker.stop_work()
-        if self.worker_thread.isRunning():
-            self.worker_thread.quit()
-            self.worker_thread.wait()
+        if hasattr(self,"worker"):
+            self.worker.deleteLater()
+        if hasattr(self,"worker_thread"):
+            self.worker_thread.deleteLater()
 
 
         for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
             plot.setXRange(0, 10)
             plot.setYRange(-1, 1)
 
-        self.worker.deleteLater()
-        self.worker_thread.deleteLater()
-        #clared old and setting up new fesh thread
-        self.worker_thread=QThread()
-        self.worker=DataWorker(dt=self.dt)
-        self.worker.moveToThread(self.worker_thread)
 
-        self.worker.data_ready.connect(self.update_plot)
-        self.worker_thread.start()
+        #setting a newthread
+        self.setup_worker()
+
 
         self.is_reset = False #full reset complete
     def apply_zoom(self, zoom_in: bool):
@@ -282,5 +289,4 @@ class MainWindow(QMainWindow):
 
     def toggle_visible_xy_plot(self, state):
         self.xy_plot.setVisible(state == Qt.Checked)
-
 
