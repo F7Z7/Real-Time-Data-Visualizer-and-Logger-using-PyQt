@@ -3,7 +3,7 @@ import numpy as np
 safe_val=1e-5 #very small value to approx zero
 
 def safe_div(num,denom):
-    return np.divide(num, denom, out=np.full_like(num, np.nan), where=np.abs(denom) > safe_val)
+    return np.divide(num, denom, out=np.full_like(num, np.nan,dtype=float), where=np.abs(denom) > safe_val)
 
 def sine_graph(t):
     return np.sin(2 * np.pi * t)
