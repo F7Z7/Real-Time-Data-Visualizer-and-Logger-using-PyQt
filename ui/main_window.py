@@ -7,7 +7,6 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer, QThread
 import pyqtgraph as pg
 from src.data_worker import DataWorker
-from src.plotting import sine_graph, cos_graph
 
 
 class MainWindow(QMainWindow):
@@ -99,7 +98,7 @@ class MainWindow(QMainWindow):
 
         math_layout.addWidget(QLabel("Optional Constants"))
         self.constant_input = QLineEdit()
-        self.constant_input.setPlaceholderText("Optional Constants eg:2,1.5")
+        self.constant_input.setPlaceholderText("eg:2,1.5")
         math_layout.addWidget(self.constant_input)
 
         self.preview_btn=QPushButton("Preview the expression")
@@ -108,6 +107,10 @@ class MainWindow(QMainWindow):
         self.preview_input=QLineEdit()
         self.preview_input.setEnabled(False)
         math_layout.addWidget(self.preview_input)
+        self.calculate_btn=QPushButton("Calculate and Plot")
+        math_layout.addWidget(self.calculate_btn)
+
+        self.calculate_btn.clicked.connect(self.on_calculate_plot)
 
 
         control_layout.addLayout(math_layout)
@@ -312,3 +315,8 @@ class MainWindow(QMainWindow):
     def toggle_visible_xy_plot(self, state):
         self.xy_plot.setVisible(state == Qt.Checked)
 
+
+
+    def on_calculate_plot(self):
+        operation = self.operations.currentText()
+        print(operation)
