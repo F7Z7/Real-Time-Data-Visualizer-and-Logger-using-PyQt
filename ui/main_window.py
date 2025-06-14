@@ -160,13 +160,10 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "Warning", "Please select both Signal A and Signal B.")
                 return
 
-            self.worker = DataWorker(dt=self.dt)
-            self.worker.moveToThread(self.worker_thread)
-            self.worker.data_ready.connect(self.update_plot)
+
 
             self.worker_thread.start()
-            self.worker_thread.started.connect(lambda: self.worker.start_signal.emit(signal1, signal2))
-
+            self.worker.start_signal.emit(signal1, signal2)
     def on_click_stop(self):
         if hasattr(self, "worker") and self.worker:
             self.worker.stop_work()
@@ -207,14 +204,26 @@ class MainWindow(QMainWindow):
         self.signal2_curve.clear()
         self.xy_plot.clear()
 
-        self.worker.stop_work()
-        self.worker_thread.quit()
-        self.worker_thread.wait()
+        if self.worker:
+            self.worker.stop_work()
+        if self.worker_thread.isRunning():
+            self.worker_thread.quit()
+            self.worker_thread.wait()
+
 
         for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
             plot.setXRange(0, 10)
             plot.setYRange(-1, 1)
 
+        self.worker.deleteLater()
+        self.worker_thread.deleteLater()
+        #clared old and setting up new fesh thread
+        self.worker_thread=QThread()
+        self.worker=DataWorker(dt=self.dt)
+        self.worker.moveToThread(self.worker_thread)
+
+        self.worker.data_ready.connect(self.update_plot)
+        self.worker_thread.start()
     def apply_zoom(self, zoom_in: bool):
         factor = 0.5 if zoom_in else 2
         mode = self.zoom_combo_box.currentText()
