@@ -102,6 +102,7 @@ class MainWindow(QMainWindow):
         math_layout.addWidget(self.constant_input)
 
         self.preview_btn=QPushButton("Preview the expression")
+        self.preview_btn.clicked.connect(self.on_preview_clicked)
         math_layout.addWidget(self.preview_btn)
         math_layout.addWidget(QLabel("Preview"))
         self.preview_input=QLineEdit()
@@ -318,5 +319,27 @@ class MainWindow(QMainWindow):
 
 
     def on_calculate_plot(self):
+        self.operation = self.operations.currentText()
+        print(self.operation)
+
+    def on_preview_clicked(self):
+        userinput1=self.user_input1.currentText()
+        userinput2=self.user_input2.currentText()
         operation = self.operations.currentText()
-        print(operation)
+        constants = self.constant_input.text().strip()
+        if userinput1=="Select a Signal" or userinput2=="Select a Signal":
+            QMessageBox.critical(self,"Error","Please select a Signal")
+
+        if operation in ["+", "-", "*", "/"]:
+            preview_expression = f"{userinput1} {operation} {userinput2}"
+        else:
+            # Replace A and B in complex expressions
+            preview_expression = operation.replace("A", userinput1).replace("B", userinput2)
+
+            # Add constants if provided
+        if constants:
+            preview_expression += f" | Constants: {constants}"
+
+            # Set preview text
+        self.preview_input.setText(preview_expression)
+        print(preview_expression)
