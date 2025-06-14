@@ -30,6 +30,10 @@ class MainWindow(QMainWindow):
         self.worker.data_ready.connect(self.update_plot)
         self.destroyed.connect(self.clean_up_worker)
 
+#declaring flags
+        self.plot_start = False
+        self.plot_stop = False
+        self.is_reset=False
     def initUI(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -152,6 +156,9 @@ class MainWindow(QMainWindow):
             plot.addLegend()
 
     def on_click_start(self):
+        if self.plot_start:
+            QMessageBox.warning(self,"warning","plot is already running")
+
         if not self.worker_thread.isRunning():
             signal1 = self.user_input1.currentText()
             signal2 = self.user_input2.currentText()
@@ -160,11 +167,20 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "Warning", "Please select both Signal A and Signal B.")
                 return
 
+            self.plot_start = True
+            self.plot_stop = False
+            self.is_reset = False
+
 
 
             self.worker_thread.start()
             self.worker.start_signal.emit(signal1, signal2)
     def on_click_stop(self):
+        if not self.plot_start:
+            return  # Already stopped
+
+        self.plot_stop = True
+        self.plot_start = False
         if hasattr(self, "worker") and self.worker:
             self.worker.stop_work()
         if hasattr(self, "worker_thread") and self.worker_thread.isRunning():
@@ -178,6 +194,9 @@ class MainWindow(QMainWindow):
             self.worker_thread.wait()
 
     def update_plot(self, t, y1, y2):
+        if self.plot_stop or self.is_reset:
+            return
+
         self.x.append(t)
         self.signal1_data.append(y1)
         self.signal2_data.append(y2)
@@ -196,6 +215,11 @@ class MainWindow(QMainWindow):
             self.plot_widget2.setXRange(self.t - 10, self.t)
 
     def reset_plot(self):
+        self.plot_stop = True
+        self.plot_start = False
+        self.is_reset = True
+
+
         self.x.clear()
         self.signal1_data.clear()
         self.signal2_data.clear()
@@ -224,6 +248,8 @@ class MainWindow(QMainWindow):
 
         self.worker.data_ready.connect(self.update_plot)
         self.worker_thread.start()
+
+        self.is_reset = False #full reset complete
     def apply_zoom(self, zoom_in: bool):
         factor = 0.5 if zoom_in else 2
         mode = self.zoom_combo_box.currentText()
