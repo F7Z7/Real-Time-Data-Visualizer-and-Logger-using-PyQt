@@ -75,8 +75,8 @@ class MainWindow(QMainWindow):
         self.user_input2 = QComboBox()
         signals = [
             "Select a Signal",
-            "Sine", "Cosine", "Tangent", "Cosecant",
-            "Secant", "Cotangent", "Triangle", "Square"
+            "Sin", "Cos", "Tan", "Cosec",
+            "Sec", "Cot", "Triangle", "Square"
         ]
 
         self.user_input1.addItems(signals)

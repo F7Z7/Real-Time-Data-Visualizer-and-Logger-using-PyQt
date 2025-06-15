@@ -16,12 +16,12 @@ class DataWorker(QObject):
         self.t = 0    # initial time
         self.start_signal.connect(self.start_work)
         self.signal_map = {
-            "Sine": sine_graph,
-            "Cosine": cos_graph,
-            "Tangent": tan_graph,
-            "Cosecant": cosec_graph,
-            "Secant": sec_graph,
-            "Cotangent": cot_graph,
+            "Sin": sine_graph,
+            "Cos": cos_graph,
+            "Tan": tan_graph,
+            "Cosec": cosec_graph,
+            "Sec": sec_graph,
+            "Cot": cot_graph,
             "Square": square_graph,
             "Triangle": triangle_graph
         }
