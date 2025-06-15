@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QTimer, QThread
 import pyqtgraph as pg
 from src.data_worker import DataWorker
+from src.math_functions import compute_expression
 
 
 class MainWindow(QMainWindow):
@@ -325,6 +326,29 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error", "Please select a Signal")
 
         return userinput1,userinput2,operation,constants
+    def on_preview_clicked(self):
+
+        user_input1, user_input2, operation, constants = self.get_user_input()
+
+        if operation in ["+", "-", "*", "/"]:
+            preview_expression = f"{user_input1} {operation} {user_input2}"
+        else:
+            # Replace A and B in complex expressions
+            preview_expression = operation.replace("A", user_input1).replace("B", user_input2)
+
+            # Add constants if provided
+        if constants:
+            preview_expression += f" | Constants: {constants}"
+
+            # Set preview text
+        self.preview_input.setText(preview_expression)
+        print(preview_expression)
+
+    def on_calculate_plot(self):
+        time_array=np.linspace(0,1,self.max_points)
+        user_input1, user_input2, operation, constants = self.get_user_input()
+
+        compute_expression(time_array, user_input1, user_input2, operation, constants)
 
 
 
