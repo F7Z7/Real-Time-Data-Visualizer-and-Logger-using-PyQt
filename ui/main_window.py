@@ -149,7 +149,7 @@ class MainWindow(QMainWindow):
         control_layout.addLayout(zoom_row)
 
         signal_row = QVBoxLayout()
-        self.choices = ["Show Signal A", "Show Signal B", "Show X-Y Plot"]
+        self.choices = ["Show Resultant Plot","Show Signal A", "Show Signal B", "Show X-Y Plot"]
         self.signal_check = []
 
         for text in self.choices:
@@ -158,9 +158,10 @@ class MainWindow(QMainWindow):
             self.signal_check.append(cb)
             signal_row.addWidget(cb)
 
-        self.signal_check[0].stateChanged.connect(self.toggle_visible_signal1)
-        self.signal_check[1].stateChanged.connect(self.toggle_visible_signal2)
-        self.signal_check[2].stateChanged.connect(self.toggle_visible_xy_plot)
+        self.signal_check[0].stateChanged.connect(self.toggle_visible_resultant)
+        self.signal_check[1].stateChanged.connect(self.toggle_visible_signal1)
+        self.signal_check[2].stateChanged.connect(self.toggle_visible_signal2)
+        self.signal_check[3].stateChanged.connect(self.toggle_visible_xy_plot)
 
         control_layout.addLayout(signal_row)
 
@@ -185,8 +186,9 @@ class MainWindow(QMainWindow):
         self.plot_widget3.setLabel("left", "Signal B", **{'color': 'blue', "font-size": "10pt"})
         self.plot_widget3.setLabel("bottom", "Signal A", **{'color': 'red', "font-size": "10pt"})
 
-        self.signal1_curve = self.plot_widget1.plot(pen=pg.mkPen(color='r', width=2), name="Signal A")
-        self.signal2_curve = self.plot_widget2.plot(pen=pg.mkPen(color='b', width=2), name="Signal B")
+        self.result_curve = self.plot_widget1.plot(pen=pg.mkPen('r', width=2), name="Math Result") #will be updTED AT LAST
+        self.signal1_curve = self.plot_widget2.plot(pen=pg.mkPen(color='b', width=2), name="Curve 1")
+        self.signal2_curve = self.plot_widget2.plot(pen=pg.mkPen(color='g', width=2), name="Curve 2")
         self.xy_plot = self.plot_widget3.plot(pen=pg.mkPen(color='g', width=2), name="X-Y Plot")
 
         for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
@@ -320,6 +322,8 @@ class MainWindow(QMainWindow):
     def toggle_visible_xy_plot(self, state):
         self.xy_plot.setVisible(state == Qt.Checked)
 
+    def toggle_visible_resultant(self, state):
+        self.result_curve.setVisible(state == Qt.Checked)
     def get_user_input(self):
         userinput1 = self.user_input1.currentText()
         userinput2 = self.user_input2.currentText()
@@ -347,7 +351,12 @@ class MainWindow(QMainWindow):
         time_array=np.linspace(0,1,self.max_points)
         user_input1, user_input2, operation, constants = self.get_user_input()
 
-        compute_expression(time_array, user_input1, user_input2, operation, constants)
+        result=compute_expression(time_array, user_input1, user_input2, operation, constants)
+        if result:
+            self.t_computed,self.y_computed=result
+            self.plot_widget1.setData(self.t_computed, self.y_computed)
+            self.result_curve=self.plot_widget1.plot(self.t_computed, self.y_computed, pen=pg.mkPen('r', width=2))
+
 
 
 
