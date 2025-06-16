@@ -93,7 +93,10 @@ class MainWindow(QMainWindow):
         operation_layout = QHBoxLayout()
         operation_layout.setSpacing(5)
         self.operations=QComboBox()
-        self.operations.addItems(["Choose an operation","+", "-", "*", "/", "sin", "cos", "A+B", "A*2", "sin(A) + 2*B"])
+        self.operations.addItems([
+            "Choose an operation", "A + B", "A - B", "A * B", "A / B",
+            "sin(A)", "cos(B)", "sin(A) + 2*B"
+        ])
         operation_layout.addWidget(self.operations)
         math_layout.addLayout(operation_layout)
 
@@ -330,19 +333,15 @@ class MainWindow(QMainWindow):
 
         user_input1, user_input2, operation, constants = self.get_user_input()
 
-        if operation in ["+", "-", "*", "/"]:
-            preview_expression = f"{user_input1} {operation} {user_input2}"
+        if operation in ["A + B", "A - B", "A * B", "A / B"]:
+            preview = f"{user_input1} {operation[2]} {user_input2}" #operation is A + B like that
         else:
-            # Replace A and B in complex expressions
-            preview_expression = operation.replace("A", user_input1).replace("B", user_input2)
+            preview = operation.replace("A", user_input1).replace("B", user_input2)
 
-            # Add constants if provided
         if constants:
-            preview_expression += f" | Constants: {constants}"
+            preview += f" | Constants: {constants}"
 
-            # Set preview text
-        self.preview_input.setText(preview_expression)
-        print(preview_expression)
+        self.preview_input.setText(preview)
 
     def on_calculate_plot(self):
         time_array=np.linspace(0,1,self.max_points)
