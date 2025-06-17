@@ -1,3 +1,5 @@
+
+
 import numpy as np
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
@@ -54,7 +56,8 @@ class MainWindow(QMainWindow):
 
         self.setup_plots()
         graphLayout = QVBoxLayout()
-        graphLayout.setSpacing(15)
+        graphLayout.setAlignment(Qt.AlignTop)
+        graphLayout.setSpacing(5)
 
         for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
             graphLayout.addWidget(plot)
@@ -171,9 +174,11 @@ class MainWindow(QMainWindow):
         return container
 
     def setup_plots(self):
+        pg.setConfigOptions(antialias=True)
         self.plot_widget1 = pg.PlotWidget()
         self.plot_widget2 = pg.PlotWidget()
         self.plot_widget3 = pg.PlotWidget()
+
         for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
             plot.setBackground('w')
             plot.setFixedHeight(300)
@@ -186,13 +191,14 @@ class MainWindow(QMainWindow):
         self.plot_widget3.setLabel("left", "Signal B", **{'color': 'blue', "font-size": "10pt"})
         self.plot_widget3.setLabel("bottom", "Signal A", **{'color': 'red', "font-size": "10pt"})
 
-        self.result_curve = self.plot_widget1.plot(pen=pg.mkPen('r', width=2), name="Math Result") #will be updTED AT LAST
+        self.result_curve = self.plot_widget1.plot(pen=pg.mkPen('r', width=2), name="Math Result",) #will be updTED AT LAST
         self.signal1_curve = self.plot_widget2.plot(pen=pg.mkPen(color='b', width=2), name="Curve 1")
         self.signal2_curve = self.plot_widget2.plot(pen=pg.mkPen(color='g', width=2), name="Curve 2")
         self.xy_plot = self.plot_widget3.plot(pen=pg.mkPen(color='g', width=2), name="X-Y Plot")
 
         for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
             plot.addLegend()
+            plot.setAntialiasing(True)
 
     def on_click_start(self):
         if self.plot_start:
@@ -348,14 +354,18 @@ class MainWindow(QMainWindow):
         self.preview_input.setText(preview)
 
     def on_calculate_plot(self):
-        time_array=np.linspace(0,1,self.max_points)
+        self.on_click_start() #automatically starts the plot
+        time_array=np.linspace(0,1,self.max_points) #get some points of time
         user_input1, user_input2, operation, constants = self.get_user_input()
 
         result=compute_expression(time_array, user_input1, user_input2, operation, constants)
         if result:
             self.t_computed,self.y_computed=result
-            self.plot_widget1.setData(self.t_computed, self.y_computed)
-            self.result_curve=self.plot_widget1.plot(self.t_computed, self.y_computed, pen=pg.mkPen('r', width=2))
+            if hasattr(self, 'result_curve') and self.result_curve:
+                self.result_curve.setData(self.t_computed, self.y_computed)
+            else:
+                self.result_curve = self.plot_widget1.plot(self.t_computed, self.y_computed, pen=pg.mkPen('r', width=2))
+
 
 
 
