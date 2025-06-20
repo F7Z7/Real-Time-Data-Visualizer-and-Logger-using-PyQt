@@ -1,5 +1,3 @@
-
-
 import numpy as np
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
@@ -10,7 +8,6 @@ from PyQt5.QtCore import Qt, QTimer, QThread
 import pyqtgraph as pg
 from src.data_worker import DataWorker
 from src.math_functions import compute_expression
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -140,7 +137,19 @@ class MainWindow(QMainWindow):
         for group in button_groups:
             row_layout = create_button_row(group)
             control_layout.addLayout(row_layout)
-
+        logger_layout = QVBoxLayout()
+        logger_label=QLabel("Logging Section")
+        logger_layout.addWidget(logger_label)
+        logger_button_row=QHBoxLayout()
+        logger_buttons=[
+            [("Start Logging",self.on_start_logging),("Stop Logging",self.on_stop_logging)],
+        ]
+        # logger_comboc_row=QHBoxLayout()
+        # logger_combos=
+        for group in logger_buttons:
+            logger_button_row = create_button_row(group)
+            logger_layout.addLayout(logger_button_row)
+        control_layout.addLayout(logger_layout)
         zoom_row = QVBoxLayout()
         zoom_label = QLabel("Zoom Mode:")
         self.zoom_combo_box = QComboBox()
@@ -367,6 +376,9 @@ class MainWindow(QMainWindow):
                 self.result_curve = self.plot_widget1.plot(self.t_computed, self.y_computed, pen=pg.mkPen('r', width=2))
 
 
-
+    def on_start_logging(self):
+        return 0
+    def on_stop_logging(self):
+        return 0
 
 
