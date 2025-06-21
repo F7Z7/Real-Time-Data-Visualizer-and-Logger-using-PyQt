@@ -144,8 +144,15 @@ class MainWindow(QMainWindow):
         logger_buttons=[
             [("Start Logging",self.on_start_logging),("Stop Logging",self.on_stop_logging)],
         ]
-        # logger_comboc_row=QHBoxLayout()
-        # logger_combos=
+        logger_combo_row=QHBoxLayout()
+        logger_label = QLabel("Choose File Format")
+        logger_combo_row.addWidget(logger_label)
+
+        logger_combo_box = QComboBox()
+        logger_combo_box.addItems(["Select the format","CSV", "Binary"])
+        logger_combo_row.addWidget(logger_combo_box)
+
+        logger_layout.addLayout(logger_combo_row)
         for group in logger_buttons:
             logger_button_row = create_button_row(group)
             logger_layout.addLayout(logger_button_row)
