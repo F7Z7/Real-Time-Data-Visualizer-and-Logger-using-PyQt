@@ -2,7 +2,7 @@ import numpy as np
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
     QHBoxLayout, QLabel, QFrame, QCheckBox, QComboBox, QSplitter,
-    QLineEdit, QSpacerItem, QSizePolicy, QMessageBox
+    QLineEdit, QSpacerItem, QSizePolicy, QMessageBox,QFileDialog
 )
 from PyQt5.QtCore import Qt, QTimer, QThread
 import pyqtgraph as pg
@@ -137,13 +137,17 @@ class MainWindow(QMainWindow):
         for group in button_groups:
             row_layout = create_button_row(group)
             control_layout.addLayout(row_layout)
+
+        #logger layout
+
         logger_layout = QVBoxLayout()
-        logger_label=QLabel("Logging Section")
+        logger_label=QLabel("Data Logging Facility")
         logger_layout.addWidget(logger_label)
-        logger_button_row=QHBoxLayout()
+
         logger_buttons=[
             [("Start Logging",self.on_start_logging),("Stop Logging",self.on_stop_logging)],
         ]
+        #for file selection
         logger_combo_row=QHBoxLayout()
         logger_label = QLabel("Choose File Format")
         logger_combo_row.addWidget(logger_label)
@@ -157,6 +161,19 @@ class MainWindow(QMainWindow):
             logger_button_row = create_button_row(group)
             logger_layout.addLayout(logger_button_row)
         control_layout.addLayout(logger_layout)
+
+        folder_layout=QVBoxLayout()
+        folder_layout.addWidget(QLabel("Choose Destination Folder"))
+        self.destination=QLineEdit()
+        self.destination.setReadOnly(True) #no writing
+        select_folder_btn=QPushButton("Select Destination")
+        folder_layout.addWidget(select_folder_btn)
+        select_folder_btn.clicked.connect(self.select_folder)
+        for widgets in [self.destination,select_folder_btn]:
+            folder_layout.addWidget(widgets)
+
+        logger_layout.addLayout(folder_layout)
+        #zoom layout
         zoom_row = QVBoxLayout()
         zoom_label = QLabel("Zoom Mode:")
         self.zoom_combo_box = QComboBox()
@@ -388,4 +405,7 @@ class MainWindow(QMainWindow):
     def on_stop_logging(self):
         return 0
 
-
+    def select_folder(self):
+        destination_dir = QFileDialog.getExistingDirectory()
+        if destination_dir:
+            self.destination.setText(destination_dir)
