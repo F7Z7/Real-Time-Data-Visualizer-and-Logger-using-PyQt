@@ -160,7 +160,6 @@ class MainWindow(QMainWindow):
         for group in logger_buttons:
             logger_button_row = create_button_row(group)
             logger_layout.addLayout(logger_button_row)
-        control_layout.addLayout(logger_layout)
 
         folder_layout=QVBoxLayout()
         folder_layout.addWidget(QLabel("Choose Destination Folder"))
@@ -171,8 +170,20 @@ class MainWindow(QMainWindow):
         select_folder_btn.clicked.connect(self.select_folder)
         for widgets in [self.destination,select_folder_btn]:
             folder_layout.addWidget(widgets)
-
         logger_layout.addLayout(folder_layout)
+
+        #for selcting size of files
+
+        size_selection_layout = QHBoxLayout()
+        size_selection_layout.addWidget(QLabel("Choose Max File Size"))
+        self.size_combo = QComboBox()
+        self.size_combo.addItems(["1MB", "5MB", "10MB", "50MB", "100MB"])
+        size_selection_layout.addWidget(self.size_combo)
+        logger_layout.addLayout(size_selection_layout)
+
+
+        control_layout.addLayout(logger_layout)
+
         #zoom layout
         zoom_row = QVBoxLayout()
         zoom_label = QLabel("Zoom Mode:")
