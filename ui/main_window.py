@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt, QTimer, QThread
 import pyqtgraph as pg
 from src.data_worker import DataWorker
 from src.math_functions import compute_expression
+from src.graph_widget import Generate_Graph
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -51,17 +52,8 @@ class MainWindow(QMainWindow):
         self.control_panel = self.setup_controls()
         main_layout.addWidget(self.control_panel)
 
-        self.setup_plots()
-        graphLayout = QVBoxLayout()
-        graphLayout.setAlignment(Qt.AlignTop)
-        graphLayout.setSpacing(5)
-
-        for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
-            graphLayout.addWidget(plot)
-
-        graph_container = QWidget()
-        graph_container.setLayout(graphLayout)
-        main_layout.addWidget(graph_container)
+        generate_graph_widget = Generate_Graph()
+        main_layout.addWidget(generate_graph_widget)
 
     def setup_controls(self):
         control_layout = QVBoxLayout()

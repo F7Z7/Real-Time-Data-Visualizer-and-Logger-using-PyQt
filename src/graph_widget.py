@@ -12,12 +12,13 @@ from src.data_worker import DataWorker
 
 
 class GraphWidget(QWidget):
-    def __init__(self,graph_id,mode="operation", signal1="Sin", signal2="Cos"):
+    def __init__(self,graph_id,mode="operation", signal1="Sin", signal2="Cos",num=1):
         super().__init__()
         self.graph_id = graph_id
         self.mode = mode
-        self.signal1 = signal1
-        self.signal2 = signal2
+        self.signals=[]
+        self.signals = [f"{signal1}_{i}" for i in range(num)]
+
         self.initUI()
         self.setup_worker()
     def setup_worker(self):
@@ -27,10 +28,16 @@ class GraphWidget(QWidget):
         self.worker.data_ready.connect(self.update_plot)
         self.destroyed.connect(self.clean_up_worker)
 
-# class Generate_Graph(QWidget):
+class Generate_Graph(QWidget):
+    def __init__(self, graph_id=None):
+        super().__init__()
+        self.setMinimumSize(1000, 800)
+        self.graphs = []
+        self.dynamic_graphs_layout = QVBoxLayout()
+        self.initUI()
+
 
     def initUI(self):
-        self.setup_plots()
         graphLayout = QVBoxLayout()
         graphLayout.setAlignment(Qt.AlignTop)
         graphLayout.setSpacing(5)
@@ -39,25 +46,41 @@ class GraphWidget(QWidget):
         input_graph_layout = QHBoxLayout()
         input_graph_layout.addWidget(QLabel("Enter no of graphs"))
 
-        self.input_text=QLineEdit()
+        self.input_text = QLineEdit()
         input_graph_layout.addWidget(self.input_text)
 
         self.input_btn = QPushButton("Set")
         input_graph_layout.addWidget(self.input_btn)
 
-        self.input_btn.clicked.connect(self.on_set_clikcked)
+        self.input_btn.clicked.connect(self.on_set_clicked)
 
         graphLayout.addLayout(input_graph_layout)
 
-        self.dynamic_graphs_layout = QVBoxLayout()
+        # Layout to hold dynamically created graph widgets
         graphLayout.addLayout(self.dynamic_graphs_layout)
 
+        # Final layout set
+        self.setLayout(graphLayout)
     def on_set_clicked(self):
         try:
             num=int(self.input_text.text())
             if num<=0:
                 QMessageBox.warning(self,"Error","Please enter a positive integer")
-            # self.graph=Generate_Graph()
+            self.graph=Generate_Graph()
+
+            #reset old plots
+            for i in reversed(range(self.dynamic_graphs_layout.count())):
+                widget = self.dynamic_graphs_layout.itemAt(i).widget()
+                if widget:
+                    widget.setParent(None)
+
+            self.graphs = []
+
+            # Add new graph widgets dynamically
+            for i in range(num):
+                graph_widget = GraphWidget(graph_id=i, num=num)
+                self.graphs.append(graph_widget)
+                self.dynamic_graphs_layout.addWidget(graph_widget)
 
         except ValueError:
             QMessageBox.critical(self,"Error","Please enter a  integer")
