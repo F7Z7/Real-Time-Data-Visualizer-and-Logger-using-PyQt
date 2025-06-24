@@ -1,14 +1,13 @@
 import numpy as np
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
-    QHBoxLayout, QLabel, QFrame, QCheckBox, QComboBox, QSplitter,
-    QLineEdit, QSpacerItem, QSizePolicy, QMessageBox,QFileDialog
+    QHBoxLayout, QLabel, QCheckBox, QComboBox, QLineEdit, QMessageBox, QFileDialog
 )
-from PyQt5.QtCore import Qt, QTimer, QThread
+from PyQt5.QtCore import Qt, QThread
 import pyqtgraph as pg
 from src.data_worker import DataWorker
 from src.math_functions import compute_expression
-from src.graph_widget import Generate_Graph
+from plotting.graph_widget import Generate_Graph
 
 class MainWindow(QMainWindow):
     def __init__(self):

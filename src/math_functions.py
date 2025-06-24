@@ -1,5 +1,4 @@
-import numpy as np
-from src.plotting import *
+from plotting.plotting import *
 
 # Signal name to function mapping
 def get_signal_name(name):
