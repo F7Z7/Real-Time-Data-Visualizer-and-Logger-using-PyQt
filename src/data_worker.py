@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QObject, pyqtSignal,pyqtSlot
-from plotting.plotting import (
+from graph_plotting_functionalities.plotting import (
     sine_graph, cos_graph, tan_graph, cot_graph,
     cosec_graph, sec_graph, square_graph, triangle_graph
 )

@@ -1,4 +1,4 @@
-from plotting.plotting import *
+from graph_plotting_functionalities.plotting import *
 
 # Signal name to function mapping
 def get_signal_name(name):

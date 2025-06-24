@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, QThread
 import pyqtgraph as pg
 from src.data_worker import DataWorker
 from src.math_functions import compute_expression
-from plotting.graph_widget import Generate_Graph
+from graph_plotting_functionalities.graph_widget import Generate_Graph
 
 class MainWindow(QMainWindow):
     def __init__(self):
