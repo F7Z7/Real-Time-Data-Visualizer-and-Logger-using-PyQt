@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt, QThread
 import pyqtgraph as pg
 from src.data_worker import DataWorker
 from src.math_functions import compute_expression
-from graph_plotting_functionalities.graph_widget import Generate_Graph
+from graph_plotting_functionalities.Graph_Layout import Generate_Graph
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -36,10 +36,6 @@ class MainWindow(QMainWindow):
         self.worker.data_ready.connect(self.update_plot)
         self.destroyed.connect(self.clean_up_worker)
 
-
-
-
-
     def initUI(self):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -48,11 +44,20 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(10, 10, 10, 10)
         main_layout.setSpacing(15)
 
+        # Left panel: controls
         self.control_panel = self.setup_controls()
         main_layout.addWidget(self.control_panel)
 
-        generate_graph_widget = Generate_Graph()
-        main_layout.addWidget(generate_graph_widget)
+        # Right panel: Generate_Graph + static plots
+        right_layout = QVBoxLayout()
+        right_layout.setSpacing(10)
+
+        # Dynamic user-defined graphs
+        self.generate_graph_widget = Generate_Graph()
+        right_layout.addWidget(self.generate_graph_widget)
+
+        # Add the full right layout to main layout
+        main_layout.addLayout(right_layout)
 
     def setup_controls(self):
         control_layout = QVBoxLayout()
@@ -207,6 +212,7 @@ class MainWindow(QMainWindow):
         container.setLayout(control_layout)
         container.setFixedWidth(240)
         return container
+
 
     def setup_plots(self):
         pg.setConfigOptions(antialias=True)
