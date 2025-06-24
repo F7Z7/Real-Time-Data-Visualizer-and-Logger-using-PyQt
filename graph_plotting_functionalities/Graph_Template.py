@@ -5,9 +5,11 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout
 class GraphTemplate(QWidget):
     def __init__(self, title="Signal Plot", xlabel="Time (s)", ylabel="Amplitude", legend=False, height=300):
         super().__init__()
+        self.setFixedHeight(height)
 
         self.plot = pg.PlotWidget()
         self.initUI(title, xlabel, ylabel, legend, height)
+
 
     def initUI(self, title, xlabel, ylabel, legend, height):
         self.plot.setTitle(title)
