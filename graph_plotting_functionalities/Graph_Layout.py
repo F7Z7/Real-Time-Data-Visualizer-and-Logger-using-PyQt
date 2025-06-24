@@ -1,17 +1,24 @@
 #here full structre is integrated
 #layout->input panle->graph stacked
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout,  QScrollArea,QLabel, QLineEdit, QPushButton, QMessageBox
 from graph_plotting_functionalities.graph_widget import GraphWidget
-
 
 class Generate_Graph(QWidget):
     def __init__(self):
         super().__init__()
         self.setMinimumSize(1000, 800)
         self.graphs = []
-        self.dynamic_graphs_layout = QVBoxLayout()
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+
+        self.scroll_content = QWidget()
+        self.dynamic_graphs_layout = QVBoxLayout(self.scroll_content)
+        self.dynamic_graphs_layout.setSpacing(0)
+        self.scroll_area.setWidget(self.scroll_content)
+
         self.initUI()
+
 
     def initUI(self):
 
@@ -47,6 +54,7 @@ class Generate_Graph(QWidget):
 
         graph_layout.addLayout(self.dynamic_graphs_layout)
 
+        graph_layout.addWidget(self.scroll_area)
         self.setLayout(graph_layout)
 
     def on_set_clicked(self):
@@ -64,7 +72,7 @@ class Generate_Graph(QWidget):
 
             self.graphs = []
             for i in range(total_graphs):
-                graph_widget = GraphWidget(graph_id=i, num=total_graphs)
+                graph_widget = GraphWidget(graph_id=i+1, num=total_graphs)
                 self.graphs.append(graph_widget)
                 self.dynamic_graphs_layout.addWidget(graph_widget)
 
