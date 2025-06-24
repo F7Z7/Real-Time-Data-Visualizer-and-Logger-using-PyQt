@@ -43,10 +43,9 @@ class Generate_Graph(QWidget):
 
         #here goes the input stack of graphs
 
-        self.dynamic_graph_layout = QVBoxLayout()
-        self.dynamic_graph_layout.setSpacing(5)
 
-        graph_layout.addLayout(self.dynamic_graph_layout)
+
+        graph_layout.addLayout(self.dynamic_graphs_layout)
 
         self.setLayout(graph_layout)
 
