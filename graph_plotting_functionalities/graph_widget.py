@@ -28,6 +28,11 @@ class GraphWidget(QWidget):
         self.start_btn = QPushButton('Start')
         self.stop_btn = QPushButton('Stop')
         self.reset_btn = QPushButton('Reset')
+        #connection functionalities
+        self.start_btn.clicked.connect(self.on_start_clicked)
+        self.stop_btn.clicked.connect(self.on_stop_clicked)
+        self.reset_btn.clicked.connect(self.on_reset_clicked)
+
         for btn in [self.start_btn, self.stop_btn, self.reset_btn]:
             btn.setFixedWidth(200)
             self.individual_controls.addWidget(btn)
@@ -51,3 +56,18 @@ class GraphWidget(QWidget):
     def update_plot(self, t, y1, y2=None):
         self.graph_template.generate_color()
         self.graph_template.add_curve(t, y1, label=self.signal_name, pen_color=self.graph_template.pen_color)
+
+    def on_start_clicked(self):
+        if not self.worker_thread.isRunning():
+            self.worker_thread.start()
+
+    def on_stop_clicked(self):
+        if hasattr(self, "worker") and self.worker:
+            self.worker.stop_work()
+        if hasattr(self, "worker_thread") and self.worker_thread.isRunning():
+            self.worker_thread.quit()
+            self.worker_thread.wait()
+
+    def on_reset_clicked(self):
+        # Optionally clear the plot
+        self.graph_template.plot.clear()
