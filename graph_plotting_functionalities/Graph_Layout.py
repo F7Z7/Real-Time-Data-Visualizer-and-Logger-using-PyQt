@@ -3,6 +3,8 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout,  QScrollArea,QLabel, QLineEdit, QPushButton, QMessageBox
 from graph_plotting_functionalities.graph_widget import GraphWidget
+from graph_plotting_functionalities.plotting import Signal_list
+from random import choice
 
 class Generate_Graph(QWidget):
     def __init__(self):
@@ -71,10 +73,14 @@ class Generate_Graph(QWidget):
                     widget.setParent(None)
 
             self.graphs = []
+            self.signals_dict = Signal_list
+            self.signal_names = list(self.signals_dict.keys())
+
             for i in range(total_graphs):
-                graph_widget = GraphWidget(graph_id=i+1, num=total_graphs)
-                self.graphs.append(graph_widget)
-                self.dynamic_graphs_layout.addWidget(graph_widget)
+                self.signal_name = self.signal_names[i % len(self.signal_names)]
+                self.graph_widget = GraphWidget(graph_id=i+1, num=total_graphs,signal1=self.signal_name)
+                self.graphs.append(self.graph_widget)
+                self.dynamic_graphs_layout.addWidget(self.graph_widget)
 
         except ValueError:
             QMessageBox.critical(self, "Error", "Invalid Value")

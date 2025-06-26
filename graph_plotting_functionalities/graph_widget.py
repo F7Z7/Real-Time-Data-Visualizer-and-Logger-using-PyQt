@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 from PyQt5.QtCore import QThread
+
+from graph_plotting_functionalities.plotting import Signal_list
 from src.data_worker import DataWorker
 from graph_plotting_functionalities.Graph_Template import GraphTemplate
 class GraphWidget(QWidget):
@@ -7,7 +9,8 @@ class GraphWidget(QWidget):
         super().__init__()
         self.graph_id = graph_id
         self.mode = mode
-        self.signals = [f"{signal1}_{i}" for i in range(num)]
+        self.signal_name=signal1 #name
+        self.signal_func = Signal_list[signal1] #function
         self.dt = 0.05  # ensure this is set
 
         self.initUI()
@@ -34,7 +37,7 @@ class GraphWidget(QWidget):
 
     def setup_worker(self):
         self.worker_thread = QThread()
-        self.worker = DataWorker(dt=self.dt)
+        self.worker = DataWorker(dt=self.dt,signal_func=self.signal_func) #passing it to thread
         self.worker.moveToThread(self.worker_thread)
         self.worker.data_ready.connect(self.update_plot)
         self.destroyed.connect(self.clean_up_worker)
@@ -45,7 +48,6 @@ class GraphWidget(QWidget):
             self.worker_thread.quit()
             self.worker_thread.wait()
 
-    def update_plot(self, t, y1, y2):
-        # Example data graph_plotting_functionalities
-        self.graph_template.add_curve(t, y1, label="Signal A")
-        self.graph_template.add_curve(t, y2, label="Signal B")
+    def update_plot(self, t, y1, y2=None):
+        self.graph_template.generate_color()
+        self.graph_template.add_curve(t, y1, label=self.signal_name, pen_color=self.graph_template.pen_color)
