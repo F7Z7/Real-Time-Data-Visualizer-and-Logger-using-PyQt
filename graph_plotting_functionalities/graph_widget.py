@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 from PyQt5.QtCore import QThread
 from src.data_worker import DataWorker
 from graph_plotting_functionalities.Graph_Template import GraphTemplate
@@ -21,7 +21,15 @@ class GraphWidget(QWidget):
             ylabel="Amplitude",
             legend=True
         )
+        self.individual_controls = QHBoxLayout()
+        self.start_btn = QPushButton('Start')
+        self.stop_btn = QPushButton('Stop')
+        self.reset_btn = QPushButton('Reset')
+        for btn in [self.start_btn, self.stop_btn, self.reset_btn]:
+            btn.setFixedWidth(200)
+            self.individual_controls.addWidget(btn)
         layout.addWidget(self.graph_template)
+        layout.addLayout(self.individual_controls)
         self.setLayout(layout)
 
     def setup_worker(self):
