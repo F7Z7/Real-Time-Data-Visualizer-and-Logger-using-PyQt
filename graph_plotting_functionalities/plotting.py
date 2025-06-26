@@ -28,3 +28,14 @@ def triangle_graph(t):
 
 def square_graph(t):
     return np.where((t % 1) < 0.5, 1, -1)
+
+Signal_list={
+    "sine": sine_graph,
+    "cos": cos_graph,
+    "tan": tan_graph,
+    "cosec": cosec_graph,
+    "sec": sec_graph,
+    "cot": cot_graph,
+    "triangle": triangle_graph,
+    "square": square_graph
+}
