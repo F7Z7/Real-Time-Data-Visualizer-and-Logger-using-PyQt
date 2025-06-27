@@ -36,6 +36,7 @@ class GraphWidget(QWidget):
             ylabel="Amplitude",
             legend=True,
         )
+        self.graph_template.plot.enableAutoRange(False)
         pen = pg.mkPen(color=self.pen_color, width=self.pen_width)
         self.curve = self.graph_template.plot.plot([], [], pen=pen, name=self.signal_name)
         layout.addWidget(self.graph_template)
@@ -133,16 +134,17 @@ class GraphWidget(QWidget):
     def apply_zoom(self, zoom_in: bool):
         factor = 0.5 if zoom_in else 2
         mode = self.zoom_combo_box.currentText()
-        for plot_widget in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
-            x_range, y_range = plot_widget.viewRange()
-            x_center = (x_range[0] + x_range[1]) / 2
-            y_center = (y_range[0] + y_range[1]) / 2
-            if mode in ["X Axis", "Both"]:
-                width = (x_range[1] - x_range[0]) * factor
-                plot_widget.setXRange(x_center - width / 2, x_center + width / 2)
-            if mode in ["Y Axis", "Both"]:
-                height = (y_range[1] - y_range[0]) * factor
-                plot_widget.setYRange(y_center - height / 2, y_center + height / 2)
+
+        plot_widget=self.graph_template.plot
+        x_range, y_range = plot_widget.viewRange()
+        x_center = (x_range[0] + x_range[1]) / 2
+        y_center = (y_range[0] + y_range[1]) / 2
+        if mode in ["X Axis", "Both"]:
+            width = (x_range[1] - x_range[0]) * factor
+            plot_widget.setXRange(x_center - width / 2, x_center + width / 2)
+        if mode in ["Y Axis", "Both"]:
+            height = (y_range[1] - y_range[0]) * factor
+            plot_widget.setYRange(y_center - height / 2, y_center + height / 2)
 
     def zoom_in(self):
         self.apply_zoom(True)
