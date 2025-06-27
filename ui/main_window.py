@@ -125,9 +125,8 @@ class MainWindow(QMainWindow):
             return row
 
         button_groups = [
-            [("Start", self.on_click_start), ("Stop", self.on_click_stop)],
-            [("Zoom In", self.zoom_in), ("Zoom Out", self.zoom_out)],
-            [("Auto-Scale", self.auto_scale), ("Reset", self.reset_plot)],
+            [("Start All", self.on_click_start), ("Stop All", self.on_click_stop)],
+            [("Auto-Scale", self.auto_scale), ("Reset All", self.reset_plot)],
         ]
 
         for group in button_groups:
@@ -181,15 +180,7 @@ class MainWindow(QMainWindow):
         control_layout.addLayout(logger_layout)
 
         #zoom layout
-        zoom_row = QVBoxLayout()
-        zoom_label = QLabel("Zoom Mode:")
-        self.zoom_combo_box = QComboBox()
-        self.zoom_combo_box.addItems(["X Axis", "Y Axis", "Both"])
-        self.zoom_combo_box.setCurrentIndex(2)
-        self.zoom_combo_box.setFixedWidth(150)
-        zoom_row.addWidget(zoom_label)
-        zoom_row.addWidget(self.zoom_combo_box)
-        control_layout.addLayout(zoom_row)
+
 
         signal_row = QVBoxLayout()
         self.choices = ["Show Resultant Plot","Show Signal A", "Show Signal B", "Show X-Y Plot"]
@@ -336,25 +327,6 @@ class MainWindow(QMainWindow):
 
 
         self.is_reset = False #full reset complete
-    def apply_zoom(self, zoom_in: bool):
-        factor = 0.5 if zoom_in else 2
-        mode = self.zoom_combo_box.currentText()
-        for plot_widget in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
-            x_range, y_range = plot_widget.viewRange()
-            x_center = (x_range[0] + x_range[1]) / 2
-            y_center = (y_range[0] + y_range[1]) / 2
-            if mode in ["X Axis", "Both"]:
-                width = (x_range[1] - x_range[0]) * factor
-                plot_widget.setXRange(x_center - width / 2, x_center + width / 2)
-            if mode in ["Y Axis", "Both"]:
-                height = (y_range[1] - y_range[0]) * factor
-                plot_widget.setYRange(y_center - height / 2, y_center + height / 2)
-
-    def zoom_in(self):
-        self.apply_zoom(True)
-
-    def zoom_out(self):
-        self.apply_zoom(False)
 
     def auto_scale(self):
         for plot in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
