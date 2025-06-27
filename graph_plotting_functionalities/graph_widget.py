@@ -1,3 +1,5 @@
+import random
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 from PyQt5.QtCore import QThread
 
@@ -15,6 +17,7 @@ class GraphWidget(QWidget):
 
         self.initUI()
         self.setup_worker()
+        self.pen_color = self.generate_color()
 
     def initUI(self):
         layout = QVBoxLayout()
@@ -40,6 +43,9 @@ class GraphWidget(QWidget):
         layout.addLayout(self.individual_controls)
         self.setLayout(layout)
 
+    def generate_color(self):
+        chars = '0123456789ABCDEF'
+        return  "#" + "".join(random.choice(chars) for _ in range(6))
     def setup_worker(self):
         self.worker_thread = QThread()
         self.worker = DataWorker(dt=self.dt,signal_func=self.signal_func) #passing it to thread
@@ -54,11 +60,11 @@ class GraphWidget(QWidget):
             self.worker_thread.wait()
 
     def update_plot(self, t, y1, y2=None):
-        self.graph_template.generate_color()
-        self.graph_template.add_curve(t, y1, label=self.signal_name, pen_color=self.graph_template.pen_color)
+        self.graph_template.add_curve(t, y1, label=self.signal_name, pen_color=self.pen_color)
 
     def on_start_clicked(self):
         if not self.worker_thread.isRunning():
+            self.worker_thread.started.connect(self.worker.start_work)
             self.worker_thread.start()
 
     def on_stop_clicked(self):

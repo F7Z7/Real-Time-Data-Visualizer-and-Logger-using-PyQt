@@ -30,10 +30,7 @@ class GraphTemplate(QWidget):
         layout = QVBoxLayout()
         layout.addWidget(self.plot)
         self.setLayout(layout)
-    def generate_color(self):
-        chars = '0123456789ABCDEF'
-        self.pen_color="#"+"".join(random.choice(chars) for _ in range(6))
 
     def add_curve(self, x_data, y_data, label="Signal", pen_color="r", width=2):
-        pen=pg.mkPen(color=self.pen_color,width=width)
+        pen=pg.mkPen(color=pen_color,width=width)
         return self.plot.plot(x_data, y_data, pen=pen, name=label)
