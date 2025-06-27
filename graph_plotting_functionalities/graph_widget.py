@@ -1,7 +1,7 @@
 import random
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, Qt
 
 from graph_plotting_functionalities.plotting import Signal_list
 from src.data_worker import DataWorker
@@ -18,6 +18,7 @@ class GraphWidget(QWidget):
 
 
         self.pen_color = self.generate_color()
+        self.pen_width = 3
         self.curve=None
 
         self.initUI()
@@ -29,9 +30,10 @@ class GraphWidget(QWidget):
             title=f"Graph {self.graph_id}",
             xlabel="Time (s)",
             ylabel="Amplitude",
-            legend=True
+            legend=True,
         )
-        self.curve=self.graph_template.plot.plot([],[],pen=self.pen_color,name=self.signal_name)
+        pen=pg.mkPen(color=self.pen_color,width=self.pen_width)
+        self.curve=self.graph_template.plot.plot([],[],pen=pen,name=self.signal_name)
 
         self.individual_controls = QHBoxLayout()
         self.start_btn = QPushButton('Start')
@@ -84,6 +86,11 @@ class GraphWidget(QWidget):
             self.worker_thread.wait()
 
     def on_reset_clicked(self):
+        self.on_stop_clicked()
 
         self.graph_template.plot.clear()
-        self.curve = self.graph_template.plot.plot([], [], pen=pg.mkPen(color=self.pen_color,width=5), name=self.signal_name)
+
+        pen=pg.mkPen(color=self.pen_color,width=self.pen_width)
+        self.curve = self.graph_template.plot.plot([], [], pen=pen, name=self.signal_name)
+
+        self.setup_worker()
