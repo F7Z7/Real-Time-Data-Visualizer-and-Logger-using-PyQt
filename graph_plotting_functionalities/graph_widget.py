@@ -1,7 +1,9 @@
 import random
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel,QHBoxLayout, QPushButton, QComboBox, QSizePolicy, QGroupBox, QSpacerItem
 from PyQt5.QtCore import QThread, Qt
+from PyQt5.QtGui import QIcon
+
 
 from graph_plotting_functionalities.plotting import Signal_list
 from src.data_worker import DataWorker
@@ -26,29 +28,62 @@ class GraphWidget(QWidget):
 
     def initUI(self):
         layout = QVBoxLayout()
+
+        # === Graph ===
         self.graph_template = GraphTemplate(
             title=f"Graph {self.graph_id}",
             xlabel="Time (s)",
             ylabel="Amplitude",
             legend=True,
         )
-        pen=pg.mkPen(color=self.pen_color,width=self.pen_width)
-        self.curve=self.graph_template.plot.plot([],[],pen=pen,name=self.signal_name)
+        pen = pg.mkPen(color=self.pen_color, width=self.pen_width)
+        self.curve = self.graph_template.plot.plot([], [], pen=pen, name=self.signal_name)
+        layout.addWidget(self.graph_template)
 
-        self.individual_controls = QHBoxLayout()
+        # === Control Panel ===
+        controls_box = QGroupBox("Controls")
+        controls_layout = QHBoxLayout()
+
+        button_layout = QHBoxLayout()
         self.start_btn = QPushButton('Start')
         self.stop_btn = QPushButton('Stop')
         self.reset_btn = QPushButton('Reset')
-        #connection functionalities
+
+        for btn in [self.start_btn, self.stop_btn, self.reset_btn]:
+            btn.setFixedWidth(120)
+            button_layout.addWidget(btn)
+
+        zoom_layout = QHBoxLayout()
+        self.zoom_combo_box = QComboBox()
+        self.zoom_combo_box.setFixedWidth(100)
+        self.zoom_combo_box.addItems(["X Axis", "Y Axis", "Both"])
+        self.zoom_combo_box.setToolTip("Choose axis to zoom")
+
+        self.zoom_in_btn = QPushButton('＋ Zoom In')
+        self.zoom_out_btn = QPushButton('－ Zoom Out')
+
+        for widg in [self.zoom_combo_box, self.zoom_in_btn, self.zoom_out_btn]:
+            widg.setFixedWidth(100)
+            zoom_layout.addWidget(widg)
+
+        # Add to layout
+        controls_layout.addLayout(button_layout)
+        controls_layout.addSpacerItem(QSpacerItem(20, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        controls_layout.addLayout(zoom_layout)
+        controls_box.setLayout(controls_layout)
+        layout.addWidget(controls_box)
+
+        # Connections
         self.start_btn.clicked.connect(self.on_start_clicked)
         self.stop_btn.clicked.connect(self.on_stop_clicked)
         self.reset_btn.clicked.connect(self.on_reset_clicked)
+        self.zoom_in_btn.clicked.connect(self.zoom_in)
+        self.zoom_out_btn.clicked.connect(self.zoom_out)
 
-        for btn in [self.start_btn, self.stop_btn, self.reset_btn]:
-            btn.setFixedWidth(200)
-            self.individual_controls.addWidget(btn)
-        layout.addWidget(self.graph_template)
-        layout.addLayout(self.individual_controls)
+
+
+        # Apply main layout
+        layout.addStretch()
         self.setLayout(layout)
 
     def generate_color(self):
@@ -94,3 +129,23 @@ class GraphWidget(QWidget):
         self.curve = self.graph_template.plot.plot([], [], pen=pen, name=self.signal_name)
 
         self.setup_worker()
+
+    def apply_zoom(self, zoom_in: bool):
+        factor = 0.5 if zoom_in else 2
+        mode = self.zoom_combo_box.currentText()
+        for plot_widget in [self.plot_widget1, self.plot_widget2, self.plot_widget3]:
+            x_range, y_range = plot_widget.viewRange()
+            x_center = (x_range[0] + x_range[1]) / 2
+            y_center = (y_range[0] + y_range[1]) / 2
+            if mode in ["X Axis", "Both"]:
+                width = (x_range[1] - x_range[0]) * factor
+                plot_widget.setXRange(x_center - width / 2, x_center + width / 2)
+            if mode in ["Y Axis", "Both"]:
+                height = (y_range[1] - y_range[0]) * factor
+                plot_widget.setYRange(y_center - height / 2, y_center + height / 2)
+
+    def zoom_in(self):
+        self.apply_zoom(True)
+
+    def zoom_out(self):
+        self.apply_zoom(False)
