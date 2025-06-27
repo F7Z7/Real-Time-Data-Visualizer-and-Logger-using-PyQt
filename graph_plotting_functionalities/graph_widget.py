@@ -62,8 +62,9 @@ class GraphWidget(QWidget):
 
         self.zoom_in_btn = QPushButton('＋ Zoom In')
         self.zoom_out_btn = QPushButton('－ Zoom Out')
+        self.auto_scale_btn = QPushButton('Auto-scale')
 
-        for widg in [self.zoom_combo_box, self.zoom_in_btn, self.zoom_out_btn]:
+        for widg in [self.zoom_combo_box, self.zoom_in_btn, self.zoom_out_btn,self.auto_scale_btn]:
             widg.setFixedWidth(100)
             zoom_layout.addWidget(widg)
 
@@ -80,6 +81,7 @@ class GraphWidget(QWidget):
         self.reset_btn.clicked.connect(self.on_reset_clicked)
         self.zoom_in_btn.clicked.connect(self.zoom_in)
         self.zoom_out_btn.clicked.connect(self.zoom_out)
+        self.auto_scale_btn.clicked.connect(self.auto_scale)
 
 
 
@@ -151,3 +153,7 @@ class GraphWidget(QWidget):
 
     def zoom_out(self):
         self.apply_zoom(False)
+
+    def auto_scale(self):
+        plot_widget=self.graph_template.plot
+        plot_widget.enableAutoRange(axis=pg.ViewBox.XYAxes, enable=True)
