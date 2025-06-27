@@ -21,8 +21,13 @@ class DataWorker(QObject):
 
         while self.running:
             y1 = self.signal_func(self.t)
+            MAX_POINTS = 500 #limit the max poisnt
+
             self.t_data.append(self.t)
             self.y_data.append(y1)
+            if len(self.t_data) > MAX_POINTS:
+                self.t_data = self.t_data[-MAX_POINTS:]
+                self.y_data = self.y_data[-MAX_POINTS:]
 
             self.data_ready.emit(self.t_data.copy(), self.y_data.copy(), None)
 
