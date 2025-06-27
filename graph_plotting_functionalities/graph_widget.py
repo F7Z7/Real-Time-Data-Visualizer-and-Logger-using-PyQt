@@ -6,6 +6,7 @@ from PyQt5.QtCore import QThread
 from graph_plotting_functionalities.plotting import Signal_list
 from src.data_worker import DataWorker
 from graph_plotting_functionalities.Graph_Template import GraphTemplate
+import pyqtgraph as pg
 class GraphWidget(QWidget):
     def __init__(self, graph_id, mode="operation", signal1="Sin", signal2="Cos", num=1):
         super().__init__()
@@ -15,9 +16,12 @@ class GraphWidget(QWidget):
         self.signal_func = Signal_list[signal1] #function
         self.dt = 0.05  # ensure this is set
 
+
+        self.pen_color = self.generate_color()
+        self.curve=None
+
         self.initUI()
         self.setup_worker()
-        self.pen_color = self.generate_color()
 
     def initUI(self):
         layout = QVBoxLayout()
@@ -27,6 +31,8 @@ class GraphWidget(QWidget):
             ylabel="Amplitude",
             legend=True
         )
+        self.curve=self.graph_template.plot.plot([],[],pen=self.pen_color,name=self.signal_name)
+
         self.individual_controls = QHBoxLayout()
         self.start_btn = QPushButton('Start')
         self.stop_btn = QPushButton('Stop')
@@ -54,18 +60,21 @@ class GraphWidget(QWidget):
         self.destroyed.connect(self.clean_up_worker)
 
     def clean_up_worker(self):
+        if self.worker:
+            self.worker.stop_work()
         if self.worker_thread.isRunning():
             self.worker.stop_work()
             self.worker_thread.quit()
             self.worker_thread.wait()
 
     def update_plot(self, t, y1, y2=None):
-        self.graph_template.add_curve(t, y1, label=self.signal_name, pen_color=self.pen_color)
+        self.curve.setData(t,y1)
 
     def on_start_clicked(self):
         if not self.worker_thread.isRunning():
             self.worker_thread.started.connect(self.worker.start_work)
             self.worker_thread.start()
+
 
     def on_stop_clicked(self):
         if hasattr(self, "worker") and self.worker:
@@ -75,5 +84,6 @@ class GraphWidget(QWidget):
             self.worker_thread.wait()
 
     def on_reset_clicked(self):
-        # Optionally clear the plot
+
         self.graph_template.plot.clear()
+        self.curve = self.graph_template.plot.plot([], [], pen=pg.mkPen(color=self.pen_color,width=5), name=self.signal_name)

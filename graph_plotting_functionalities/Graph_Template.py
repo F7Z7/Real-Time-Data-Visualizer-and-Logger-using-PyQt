@@ -8,6 +8,7 @@ class GraphTemplate(QWidget):
         self.setFixedHeight(height)
 
         self.plot = pg.PlotWidget()
+        self.plot.setAntialiasing(True)
         self.initUI(title, xlabel, ylabel, legend, height)
 
 
@@ -23,14 +24,13 @@ class GraphTemplate(QWidget):
 
         self.plot.getViewBox().setMouseMode(pg.ViewBox.RectMode)
 
-        if legend:
-            self.plot.addLegend()
+
 
 
         layout = QVBoxLayout()
         layout.addWidget(self.plot)
         self.setLayout(layout)
 
-    def add_curve(self, x_data, y_data, label="Signal", pen_color="r", width=2):
+    def add_curve(self, x_data, y_data, label="Signal", pen_color="r", width=5):
         pen=pg.mkPen(color=pen_color,width=width)
         return self.plot.plot(x_data, y_data, pen=pen, name=label)

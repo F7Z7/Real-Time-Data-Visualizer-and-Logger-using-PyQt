@@ -1,8 +1,9 @@
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 import time
 
 class DataWorker(QObject):
     data_ready = pyqtSignal(object, object, object)  # t_list, y_list, y2_list (optional)
+    MAX_POINTS = 500  # limit the max poisnt
 
     def __init__(self, dt=0.05, signal_func=None):
         super().__init__()
@@ -13,6 +14,7 @@ class DataWorker(QObject):
         self.t_data = []
         self.y_data = []
 
+    @pyqtSlot()
     def start_work(self):
         self.running = True
         self.t = 0
@@ -20,17 +22,20 @@ class DataWorker(QObject):
         self.y_data = []
 
         while self.running:
+            if not hasattr(self, 'data_ready'):
+                break  # Avoid using deleted object
+
             y1 = self.signal_func(self.t)
-            MAX_POINTS = 500 #limit the max poisnt
 
             self.t_data.append(self.t)
             self.y_data.append(y1)
-            if len(self.t_data) > MAX_POINTS:
-                self.t_data = self.t_data[-MAX_POINTS:]
-                self.y_data = self.y_data[-MAX_POINTS:]
-
-            self.data_ready.emit(self.t_data.copy(), self.y_data.copy(), None)
-
+            if len(self.t_data) >self.MAX_POINTS:
+                self.t_data = self.t_data[-self.MAX_POINTS:]
+                self.y_data = self.y_data[-self.MAX_POINTS:]
+            try:
+                self.data_ready.emit(self.t_data.copy(), self.y_data.copy(), None)
+            except RuntimeError:
+                break
             self.t += self.dt
             time.sleep(self.dt)
 
