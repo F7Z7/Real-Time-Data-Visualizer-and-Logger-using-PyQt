@@ -1,12 +1,13 @@
 import random
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox,
-    QSizePolicy, QGroupBox, QSpacerItem, QLineEdit, QFileDialog
+    QSizePolicy, QGroupBox, QSpacerItem, QLineEdit, QFileDialog,QMessageBox
 )
 from PyQt5.QtCore import QThread, Qt, QEvent
 import pyqtgraph as pg
 
 from graph_plotting_functionalities.plotting import Signal_list
+from src.data_logger import logg_csv, logg_binary
 from src.data_worker import DataWorker
 from graph_plotting_functionalities.Graph_Template import GraphTemplate
 
@@ -194,6 +195,7 @@ class GraphWidget(QWidget):
         button_layout = QHBoxLayout()
         start_log_btn = QPushButton("Start Log")
         stop_log_btn = QPushButton("Stop Log")
+        stop_log_btn.setEnabled(False)
 
         for btn in [start_log_btn, stop_log_btn]:
             btn.setFixedSize(90, 30)
@@ -283,6 +285,18 @@ class GraphWidget(QWidget):
 
     def on_start_logging(self):
         print("Start logging clicked")
+        self.start_btn.setEnabled(False)
+        self.stop_btn.setEnabled(True)
+        log_type=self.logger_combo_box.currentText()
+        if log_type == "Select format":
+            QMessageBox.warning(self,"Warning","Please choose a log format")
+        elif log_type == "CSV":
+            logg_csv()
+        elif log_type == "Binary":
+            logg_binary()
+        else:
+            return False
+
         return 0
 
     def on_stop_logging(self):
