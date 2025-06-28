@@ -20,6 +20,7 @@ def create_button_row(pairs):
         row.addWidget(btn)
     return row
 
+
 class GraphWidget(QWidget):
     def __init__(self, graph_id, mode="operation", signal1="Sin", signal2="Cos", num=1):
         super().__init__()
@@ -35,12 +36,24 @@ class GraphWidget(QWidget):
 
         self.initUI()
         self.setup_worker()
-
         self.destination.installEventFilter(self)
-    def initUI(self):
-        layout = QVBoxLayout()
 
-        # === Graph ===
+    def initUI(self):
+        main_layout = QVBoxLayout()
+        main_layout.setSpacing(15)
+        main_layout.setContentsMargins(10, 10, 10, 10)
+
+        # === Graph Section ===
+        self.create_graph_section(main_layout)
+
+        # === Control Panel ===
+        self.create_control_panel(main_layout)
+
+        main_layout.addStretch()
+        self.setLayout(main_layout)
+
+    def create_graph_section(self, parent_layout):
+        """Create the graph plotting area"""
         self.graph_template = GraphTemplate(
             title=f"Graph {self.graph_id}",
             xlabel="Time (s)",
@@ -50,125 +63,153 @@ class GraphWidget(QWidget):
         self.graph_template.plot.enableAutoRange(False)
         pen = pg.mkPen(color=self.pen_color, width=self.pen_width)
         self.curve = self.graph_template.plot.plot([], [], pen=pen, name=self.signal_name)
-        layout.addWidget(self.graph_template)
+        parent_layout.addWidget(self.graph_template)
 
-        # === Control Panel ===
+    def create_control_panel(self, parent_layout):
+        """Create the main control panel with organized sections"""
         controls_box = QGroupBox("Controls")
         controls_layout = QHBoxLayout()
+        controls_layout.setSpacing(20)
+        controls_layout.setContentsMargins(15, 15, 15, 15)
 
-        # --- Start/Stop/Reset Buttons ---
-        button_layout = QVBoxLayout()
+        # Add control sections
+        self.create_playback_controls(controls_layout)
+        self.add_vertical_separator(controls_layout)
+        self.create_zoom_controls(controls_layout)
+        self.add_vertical_separator(controls_layout)
+        self.create_logging_controls(controls_layout)
+
+        controls_box.setLayout(controls_layout)
+        parent_layout.addWidget(controls_box)
+
+    def create_playback_controls(self, parent_layout):
+        """Create playback control buttons section"""
+        playback_group = QGroupBox("Playback")
+        playback_layout = QVBoxLayout()
+        playback_layout.setSpacing(8)
+
+        # Create buttons
         self.start_btn = QPushButton('Start')
         self.stop_btn = QPushButton('Stop')
         self.reset_btn = QPushButton('Reset')
-        for btn in [self.start_btn, self.stop_btn, self.reset_btn]:
-            btn.setFixedSize(100, 30)
-            button_layout.addWidget(btn)
 
+        buttons = [self.start_btn, self.stop_btn, self.reset_btn]
+        for btn in buttons:
+            btn.setFixedSize(100, 30)
+            playback_layout.addWidget(btn)
+
+        # Set tooltips
         self.start_btn.setToolTip("Start signal plotting")
         self.stop_btn.setToolTip("Stop signal plotting")
         self.reset_btn.setToolTip("Clear and restart the plot")
 
-        # --- Zoom Controls ---
+        # Connect signals
+        self.start_btn.clicked.connect(self.on_start_clicked)
+        self.stop_btn.clicked.connect(self.on_stop_clicked)
+        self.reset_btn.clicked.connect(self.on_reset_clicked)
+
+        playback_group.setLayout(playback_layout)
+        parent_layout.addWidget(playback_group)
+
+    def create_zoom_controls(self, parent_layout):
+        """Create zoom control section"""
+        zoom_group = QGroupBox("Zoom & Scale")
         zoom_layout = QVBoxLayout()
+        zoom_layout.setSpacing(8)
+
+        # Zoom axis selection
+        axis_layout = QHBoxLayout()
+        axis_layout.addWidget(QLabel("Axis:"))
         self.zoom_combo_box = QComboBox()
         self.zoom_combo_box.addItems(["X Axis", "Y Axis", "Both"])
-        self.zoom_combo_box.setFixedWidth(100)
+        self.zoom_combo_box.setFixedWidth(80)
         self.zoom_combo_box.setToolTip("Choose axis to zoom")
+        axis_layout.addWidget(self.zoom_combo_box)
+        axis_layout.addStretch()
+        zoom_layout.addLayout(axis_layout)
 
+        # Zoom buttons
         self.zoom_in_btn = QPushButton('＋ Zoom In')
         self.zoom_out_btn = QPushButton('－ Zoom Out')
-        self.auto_scale_btn = QPushButton('Auto-scale')
+        self.auto_scale_btn = QPushButton('Auto Scale')
 
-        for widg in [self.zoom_in_btn, self.zoom_out_btn, self.auto_scale_btn]:
-            widg.setFixedSize(100, 30)
+        zoom_buttons = [self.zoom_in_btn, self.zoom_out_btn, self.auto_scale_btn]
+        for btn in zoom_buttons:
+            btn.setFixedSize(100, 30)
+            zoom_layout.addWidget(btn)
 
+        # Set tooltips
         self.zoom_in_btn.setToolTip("Zoom in the selected axis")
         self.zoom_out_btn.setToolTip("Zoom out the selected axis")
         self.auto_scale_btn.setToolTip("Automatically scale plot to fit data")
 
-        zoom_layout.addWidget(self.zoom_combo_box)
-        zoom_layout.addWidget(self.zoom_in_btn)
-        zoom_layout.addWidget(self.zoom_out_btn)
-        zoom_layout.addWidget(self.auto_scale_btn)
-        zoom_layout.addStretch()
+        # Connect signals
+        self.zoom_in_btn.clicked.connect(self.zoom_in)
+        self.zoom_out_btn.clicked.connect(self.zoom_out)
+        self.auto_scale_btn.clicked.connect(self.auto_scale)
 
-        # === Logger Layout ===
+        zoom_group.setLayout(zoom_layout)
+        parent_layout.addWidget(zoom_group)
+
+    def create_logging_controls(self, parent_layout):
+        """Create data logging control section"""
+        logging_group = QGroupBox("Data Logging")
+        logging_layout = QVBoxLayout()
+        logging_layout.setSpacing(10)
+
         # File format selection
-
-        logger_layout = QVBoxLayout()
-
-        # === File Format Selection ===
-        logger_combo_row = QHBoxLayout()
-        format_label = QLabel("Choose File Format")
+        format_layout = QHBoxLayout()
+        format_layout.addWidget(QLabel("Format:"))
         self.logger_combo_box = QComboBox()
-        self.logger_combo_box.addItems(["Select the format", "CSV", "Binary"])
+        self.logger_combo_box.addItems(["Select format", "CSV", "Binary"])
+        self.logger_combo_box.setFixedWidth(100)
         self.logger_combo_box.setToolTip("Select file format for data logging")
-        logger_combo_row.addWidget(format_label)
-        logger_combo_row.addSpacing(10)
-        logger_combo_row.addWidget(self.logger_combo_box)
-        logger_combo_row.addStretch(1)  # Add right spacing
-        logger_layout.addLayout(logger_combo_row)
+        format_layout.addWidget(self.logger_combo_box)
+        format_layout.addStretch()
+        logging_layout.addLayout(format_layout)
 
-        # === Max File Size Selection ===
-        size_selection_layout = QHBoxLayout()
-        size_selection_layout.addWidget(QLabel("Choose Max File Size"))
-
+        # Max file size selection
+        size_layout = QHBoxLayout()
+        size_layout.addWidget(QLabel("Max Size:"))
         self.size_combo = QComboBox()
         self.size_combo.addItems(["1MB", "5MB", "10MB", "50MB", "100MB"])
         self.size_combo.setFixedWidth(100)
         self.size_combo.setToolTip("Max size for each log file")
-        size_selection_layout.addSpacing(10)
-        size_selection_layout.addWidget(self.size_combo)
-        size_selection_layout.addStretch(1)
-        logger_layout.addLayout(size_selection_layout)
+        size_layout.addWidget(self.size_combo)
+        size_layout.addStretch()
+        logging_layout.addLayout(size_layout)
 
-        # === Destination Folder Selection ===
-        folder_combo_layout = QVBoxLayout()
-        folder_combo_layout.addWidget(QLabel("Choose Destination Folder"))
-
+        # Destination folder
+        folder_layout = QVBoxLayout()
+        folder_layout.addWidget(QLabel("Destination:"))
         self.destination = QLineEdit()
         self.destination.setReadOnly(True)
-        self.destination.setFixedWidth(250)
-        self.destination.setPlaceholderText("Click here to select folder...")
+        self.destination.setFixedWidth(200)
+        self.destination.setPlaceholderText("Click to select folder...")
         self.destination.setCursor(Qt.PointingHandCursor)
-        folder_combo_layout.addSpacing(10)
-        folder_combo_layout.addWidget(self.destination)
-        folder_combo_layout.addStretch(1)
-        logger_layout.addLayout(folder_combo_layout)
+        folder_layout.addWidget(self.destination)
+        logging_layout.addLayout(folder_layout)
 
+        # Logging action buttons
+        button_layout = QHBoxLayout()
+        start_log_btn = QPushButton("Start Log")
+        stop_log_btn = QPushButton("Stop Log")
 
+        for btn in [start_log_btn, stop_log_btn]:
+            btn.setFixedSize(90, 30)
+            button_layout.addWidget(btn)
 
-        # === Logging Buttons ===
-        logger_button_row = QHBoxLayout()
-        logger_buttons = [("Start Logging", self.on_start_logging), ("Stop Logging", self.on_stop_logging)]
-        for text, func in logger_buttons:
-            btn = QPushButton(text)
-            btn.clicked.connect(func)
-            btn.setFixedSize(120, 30)
-            logger_button_row.addWidget(btn)
-        logger_button_row.addStretch(1)
-        logger_layout.addLayout(logger_button_row)
+        start_log_btn.clicked.connect(self.on_start_logging)
+        stop_log_btn.clicked.connect(self.on_stop_logging)
 
-        # Add to controls layout
-        controls_layout.addLayout(button_layout)
-        # controls_layout.addSpacerItem(QSpacerItem(20, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        controls_layout.addLayout(zoom_layout)
-        # controls_layout.addSpacerItem(QSpacerItem(20, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        controls_layout.addLayout(logger_layout)
+        logging_layout.addLayout(button_layout)
+        logging_group.setLayout(logging_layout)
+        parent_layout.addWidget(logging_group)
 
-        controls_box.setLayout(controls_layout)
-        layout.addWidget(controls_box)
-        layout.addStretch()
-        self.setLayout(layout)
-
-        # Connections
-        self.start_btn.clicked.connect(self.on_start_clicked)
-        self.stop_btn.clicked.connect(self.on_stop_clicked)
-        self.reset_btn.clicked.connect(self.on_reset_clicked)
-        self.zoom_in_btn.clicked.connect(self.zoom_in)
-        self.zoom_out_btn.clicked.connect(self.zoom_out)
-        self.auto_scale_btn.clicked.connect(self.auto_scale)
+    def add_vertical_separator(self, layout):
+        """Add a vertical separator line between sections"""
+        separator = QSpacerItem(1, 0, QSizePolicy.Fixed, QSizePolicy.Minimum)
+        layout.addItem(separator)
 
     def generate_color(self):
         chars = '0123456789ABCDEF'
@@ -241,12 +282,10 @@ class GraphWidget(QWidget):
         plot_widget.enableAutoRange(axis=pg.ViewBox.XYAxes, enable=True)
 
     def on_start_logging(self):
-        # Placeholder: implement logging start
         print("Start logging clicked")
         return 0
 
     def on_stop_logging(self):
-        # Placeholder: implement logging stop
         print("Stop logging clicked")
         return 0
 
@@ -256,10 +295,8 @@ class GraphWidget(QWidget):
             self.destination.setText(destination_dir)
             self.destination.setToolTip(f"Selected: {destination_dir}")
 
-
-    def eventFilter(self, obj,event):
-        if obj==self.destination and event.type()==QEvent.MouseButtonPress:
+    def eventFilter(self, obj, event):
+        if obj == self.destination and event.type() == QEvent.MouseButtonPress:
             self.select_folder()
             return True
-
         return super().eventFilter(obj, event)
