@@ -283,6 +283,13 @@ class GraphWidget(QWidget):
         plot_widget = self.graph_template.plot
         plot_widget.enableAutoRange(axis=pg.ViewBox.XYAxes, enable=True)
 
+
+    def select_folder(self):
+        destination_dir = QFileDialog.getExistingDirectory()
+        if destination_dir:
+            self.destination.setText(destination_dir)
+            self.destination.setToolTip(f"Selected: {destination_dir}")
+
     def on_start_logging(self):
         print("Start logging clicked")
         self.start_btn.setEnabled(False)
@@ -301,13 +308,9 @@ class GraphWidget(QWidget):
 
     def on_stop_logging(self):
         print("Stop logging clicked")
+        print(f"Logged file is saved to the file path: {self.destination} ")
         return 0
 
-    def select_folder(self):
-        destination_dir = QFileDialog.getExistingDirectory()
-        if destination_dir:
-            self.destination.setText(destination_dir)
-            self.destination.setToolTip(f"Selected: {destination_dir}")
 
     def eventFilter(self, obj, event):
         if obj == self.destination and event.type() == QEvent.MouseButtonPress:
