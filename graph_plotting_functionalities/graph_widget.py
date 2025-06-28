@@ -1,31 +1,34 @@
 import random
-
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox, QSizePolicy, QGroupBox, \
-    QSpacerItem, QLineEdit, QFileDialog
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox,
+    QSizePolicy, QGroupBox, QSpacerItem, QLineEdit, QFileDialog
+)
 from PyQt5.QtCore import QThread, Qt
+import pyqtgraph as pg
+
 from graph_plotting_functionalities.plotting import Signal_list
 from src.data_worker import DataWorker
 from graph_plotting_functionalities.Graph_Template import GraphTemplate
-import pyqtgraph as pg
-
 
 
 def create_button_row(pairs):
     row = QHBoxLayout()
     for label, slot in pairs:
         btn = QPushButton(label)
-        btn.setFixedSize(90, 30)
+        btn.setFixedSize(100, 30)
         btn.clicked.connect(slot)
         row.addWidget(btn)
     return row
+
+
 class GraphWidget(QWidget):
     def __init__(self, graph_id, mode="operation", signal1="Sin", signal2="Cos", num=1):
         super().__init__()
         self.graph_id = graph_id
         self.mode = mode
-        self.signal_name = signal1  # name
-        self.signal_func = Signal_list[signal1]  # function
-        self.dt = 0.05  # ensure this is set
+        self.signal_name = signal1
+        self.signal_func = Signal_list[signal1]
+        self.dt = 0.05
 
         self.pen_color = self.generate_color()
         self.pen_width = 3
@@ -53,28 +56,106 @@ class GraphWidget(QWidget):
         controls_box = QGroupBox("Controls")
         controls_layout = QHBoxLayout()
 
+        # --- Start/Stop/Reset Buttons ---
         button_layout = QHBoxLayout()
         self.start_btn = QPushButton('Start')
         self.stop_btn = QPushButton('Stop')
         self.reset_btn = QPushButton('Reset')
-
         for btn in [self.start_btn, self.stop_btn, self.reset_btn]:
-            btn.setFixedWidth(120)
+            btn.setFixedSize(100, 30)
             button_layout.addWidget(btn)
 
+        self.start_btn.setToolTip("Start signal plotting")
+        self.stop_btn.setToolTip("Stop signal plotting")
+        self.reset_btn.setToolTip("Clear and restart the plot")
+
+        # --- Zoom Controls ---
         zoom_layout = QHBoxLayout()
         self.zoom_combo_box = QComboBox()
-        self.zoom_combo_box.setFixedWidth(100)
         self.zoom_combo_box.addItems(["X Axis", "Y Axis", "Both"])
+        self.zoom_combo_box.setFixedWidth(100)
         self.zoom_combo_box.setToolTip("Choose axis to zoom")
 
         self.zoom_in_btn = QPushButton('＋ Zoom In')
         self.zoom_out_btn = QPushButton('－ Zoom Out')
         self.auto_scale_btn = QPushButton('Auto-scale')
 
-        for widg in [self.zoom_combo_box, self.zoom_in_btn, self.zoom_out_btn, self.auto_scale_btn]:
-            widg.setFixedWidth(100)
-            zoom_layout.addWidget(widg)
+        for widg in [self.zoom_in_btn, self.zoom_out_btn, self.auto_scale_btn]:
+            widg.setFixedSize(100, 30)
+
+        self.zoom_in_btn.setToolTip("Zoom in the selected axis")
+        self.zoom_out_btn.setToolTip("Zoom out the selected axis")
+        self.auto_scale_btn.setToolTip("Automatically scale plot to fit data")
+
+        zoom_layout.addWidget(self.zoom_combo_box)
+        zoom_layout.addWidget(self.zoom_in_btn)
+        zoom_layout.addWidget(self.zoom_out_btn)
+        zoom_layout.addWidget(self.auto_scale_btn)
+        zoom_layout.addStretch()
+
+        # === Logger Layout ===
+        logger_layout = QHBoxLayout()
+        logger_column = QVBoxLayout()
+
+        logger_label = QLabel("Data Logging Facility")
+        logger_column.addWidget(logger_label)
+
+        # File format selection
+        logger_combo_row = QHBoxLayout()
+        format_label = QLabel("Choose File Format")
+        self.logger_combo_box = QComboBox()
+        self.logger_combo_box.addItems(["Select the format", "CSV", "Binary"])
+        self.logger_combo_box.setFixedWidth(150)
+        self.logger_combo_box.setToolTip("Select file format for data logging")
+        logger_combo_row.addWidget(format_label)
+        logger_combo_row.addWidget(self.logger_combo_box)
+        logger_column.addLayout(logger_combo_row)
+
+        # Logging buttons
+        logger_buttons = [[("Start Logging", self.on_start_logging), ("Stop Logging", self.on_stop_logging)]]
+        for group in logger_buttons:
+            logger_button_row = create_button_row(group)
+            logger_column.addLayout(logger_button_row)
+
+        # Destination folder selection
+        folder_layout = QVBoxLayout()
+        folder_layout.addWidget(QLabel("Choose Destination Folder"))
+        self.destination = QLineEdit()
+        self.destination.setReadOnly(True)
+        self.destination.setFixedWidth(250)
+        self.destination.setToolTip("Selected folder path")
+        select_folder_btn = QPushButton("Select Destination")
+        select_folder_btn.setToolTip("Browse and select folder for saving logs")
+        select_folder_btn.setFixedSize(150, 30)
+        select_folder_btn.clicked.connect(self.select_folder)
+        folder_layout.addWidget(self.destination)
+        folder_layout.addWidget(select_folder_btn)
+        logger_column.addLayout(folder_layout)
+
+        # Max file size selection
+        size_selection_layout = QHBoxLayout()
+        size_selection_layout.addWidget(QLabel("Choose Max File Size"))
+        self.size_combo = QComboBox()
+        self.size_combo.addItems(["1MB", "5MB", "10MB", "50MB", "100MB"])
+        self.size_combo.setFixedWidth(100)
+        self.size_combo.setToolTip("Max size for each log file")
+        size_selection_layout.addWidget(self.size_combo)
+        logger_column.addLayout(size_selection_layout)
+
+        logger_column.addStretch()
+        logger_layout.addLayout(logger_column)
+
+        # Add to controls layout
+        controls_layout.addLayout(button_layout)
+        controls_layout.addSpacerItem(QSpacerItem(20, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        controls_layout.addLayout(logger_layout)
+        controls_layout.addSpacerItem(QSpacerItem(20, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        controls_layout.addLayout(zoom_layout)
+
+        controls_box.setLayout(controls_layout)
+        layout.addWidget(controls_box)
+        layout.addStretch()
+        self.setLayout(layout)
 
         # Connections
         self.start_btn.clicked.connect(self.on_start_clicked)
@@ -84,69 +165,13 @@ class GraphWidget(QWidget):
         self.zoom_out_btn.clicked.connect(self.zoom_out)
         self.auto_scale_btn.clicked.connect(self.auto_scale)
 
-        # logger layout
-
-        logger_layout = QHBoxLayout()
-        logger_label = QLabel("Data Logging Facility")
-        logger_layout.addWidget(logger_label)
-
-        logger_buttons = [
-            [("Start Logging", self.on_start_logging), ("Stop Logging", self.on_stop_logging)],
-        ]
-        # for file selection
-        logger_combo_row = QHBoxLayout()
-        logger_label = QLabel("Choose File Format")
-        logger_combo_row.addWidget(logger_label)
-
-        logger_combo_box = QComboBox()
-        logger_combo_box.addItems(["Select the format", "CSV", "Binary"])
-        logger_combo_row.addWidget(logger_combo_box)
-        logger_layout.addLayout(logger_combo_row)
-        for group in logger_buttons:
-            logger_button_row = create_button_row(group)
-            logger_layout.addLayout(logger_button_row)
-
-        folder_layout = QVBoxLayout()
-        folder_layout.addWidget(QLabel("Choose Destination Folder"))
-        self.destination = QLineEdit()
-        self.destination.setReadOnly(True)  # no writing
-        select_folder_btn = QPushButton("Select Destination")
-        folder_layout.addWidget(select_folder_btn)
-        select_folder_btn.clicked.connect(self.select_folder)
-
-        for widgets in [self.destination, select_folder_btn]:
-            folder_layout.addWidget(widgets)
-        logger_layout.addLayout(folder_layout)
-
-        # for selcting size of files
-
-        size_selection_layout = QHBoxLayout()
-        size_selection_layout.addWidget(QLabel("Choose Max File Size"))
-        self.size_combo = QComboBox()
-        self.size_combo.addItems(["1MB", "5MB", "10MB", "50MB", "100MB"])
-        size_selection_layout.addWidget(self.size_combo)
-        logger_layout.addLayout(size_selection_layout)
-
-        # Add to layout
-        controls_layout.addLayout(button_layout)
-        controls_layout.addSpacerItem(QSpacerItem(20, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        controls_layout.addLayout(logger_layout)
-        controls_layout.addSpacerItem(QSpacerItem(20, 0, QSizePolicy.Expanding, QSizePolicy.Minimum))
-        controls_layout.addLayout(zoom_layout)
-        controls_box.setLayout(controls_layout)
-        layout.addWidget(controls_box)
-
-        # Apply main layout
-        layout.addStretch()
-        self.setLayout(layout)
-
     def generate_color(self):
         chars = '0123456789ABCDEF'
         return "#" + "".join(random.choice(chars) for _ in range(6))
 
     def setup_worker(self):
         self.worker_thread = QThread()
-        self.worker = DataWorker(dt=self.dt, signal_func=self.signal_func)  # passing it to thread
+        self.worker = DataWorker(dt=self.dt, signal_func=self.signal_func)
         self.worker.moveToThread(self.worker_thread)
         self.worker.data_ready.connect(self.update_plot)
         self.destroyed.connect(self.clean_up_worker)
@@ -154,8 +179,11 @@ class GraphWidget(QWidget):
     def clean_up_worker(self):
         if self.worker:
             self.worker.stop_work()
+            try:
+                self.worker.data_ready.disconnect()
+            except TypeError:
+                pass
         if self.worker_thread.isRunning():
-            self.worker.stop_work()
             self.worker_thread.quit()
             self.worker_thread.wait()
 
@@ -176,12 +204,9 @@ class GraphWidget(QWidget):
 
     def on_reset_clicked(self):
         self.on_stop_clicked()
-
         self.graph_template.plot.clear()
-
         pen = pg.mkPen(color=self.pen_color, width=self.pen_width)
         self.curve = self.graph_template.plot.plot([], [], pen=pen, name=self.signal_name)
-
         self.setup_worker()
 
     def apply_zoom(self, zoom_in: bool):
@@ -192,6 +217,7 @@ class GraphWidget(QWidget):
         x_range, y_range = plot_widget.viewRange()
         x_center = (x_range[0] + x_range[1]) / 2
         y_center = (y_range[0] + y_range[1]) / 2
+
         if mode in ["X Axis", "Both"]:
             width = (x_range[1] - x_range[0]) * factor
             plot_widget.setXRange(x_center - width / 2, x_center + width / 2)
@@ -210,12 +236,17 @@ class GraphWidget(QWidget):
         plot_widget.enableAutoRange(axis=pg.ViewBox.XYAxes, enable=True)
 
     def on_start_logging(self):
+        # Placeholder: implement logging start
+        print("Start logging clicked")
         return 0
 
     def on_stop_logging(self):
+        # Placeholder: implement logging stop
+        print("Stop logging clicked")
         return 0
 
     def select_folder(self):
         destination_dir = QFileDialog.getExistingDirectory()
         if destination_dir:
             self.destination.setText(destination_dir)
+            self.destination.setToolTip(f"Selected: {destination_dir}")
