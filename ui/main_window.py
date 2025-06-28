@@ -8,6 +8,7 @@ import pyqtgraph as pg
 from src.data_worker import DataWorker
 from src.math_functions import compute_expression
 from graph_plotting_functionalities.Graph_Layout import Generate_Graph
+from graph_plotting_functionalities.graph_widget import create_button_row
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -115,14 +116,7 @@ class MainWindow(QMainWindow):
 
 
         control_layout.addLayout(math_layout)
-        def create_button_row(pairs):
-            row = QHBoxLayout()
-            for label, slot in pairs:
-                btn = QPushButton(label)
-                btn.setFixedSize(90, 30)
-                btn.clicked.connect(slot)
-                row.addWidget(btn)
-            return row
+
 
         button_groups = [
             [("Start All", self.on_click_start), ("Stop All", self.on_click_stop)],
@@ -133,51 +127,8 @@ class MainWindow(QMainWindow):
             row_layout = create_button_row(group)
             control_layout.addLayout(row_layout)
 
-        #logger layout
-
-        logger_layout = QVBoxLayout()
-        logger_label=QLabel("Data Logging Facility")
-        logger_layout.addWidget(logger_label)
-
-        logger_buttons=[
-            [("Start Logging",self.on_start_logging),("Stop Logging",self.on_stop_logging)],
-        ]
-        #for file selection
-        logger_combo_row=QHBoxLayout()
-        logger_label = QLabel("Choose File Format")
-        logger_combo_row.addWidget(logger_label)
-
-        logger_combo_box = QComboBox()
-        logger_combo_box.addItems(["Select the format","CSV", "Binary"])
-        logger_combo_row.addWidget(logger_combo_box)
-
-        logger_layout.addLayout(logger_combo_row)
-        for group in logger_buttons:
-            logger_button_row = create_button_row(group)
-            logger_layout.addLayout(logger_button_row)
-
-        folder_layout=QVBoxLayout()
-        folder_layout.addWidget(QLabel("Choose Destination Folder"))
-        self.destination=QLineEdit()
-        self.destination.setReadOnly(True) #no writing
-        select_folder_btn=QPushButton("Select Destination")
-        folder_layout.addWidget(select_folder_btn)
-        select_folder_btn.clicked.connect(self.select_folder)
-        for widgets in [self.destination,select_folder_btn]:
-            folder_layout.addWidget(widgets)
-        logger_layout.addLayout(folder_layout)
-
-        #for selcting size of files
-
-        size_selection_layout = QHBoxLayout()
-        size_selection_layout.addWidget(QLabel("Choose Max File Size"))
-        self.size_combo = QComboBox()
-        self.size_combo.addItems(["1MB", "5MB", "10MB", "50MB", "100MB"])
-        size_selection_layout.addWidget(self.size_combo)
-        logger_layout.addLayout(size_selection_layout)
 
 
-        control_layout.addLayout(logger_layout)
 
         #zoom layout
 
