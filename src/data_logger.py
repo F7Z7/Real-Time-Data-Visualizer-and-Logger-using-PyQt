@@ -4,7 +4,7 @@ def logg_csv(graph_widget, directory: str,signal_name:str):
         os.makedirs(directory)
 
     try:
-        x_data,y_data = graph_widget.get_data()
+        x_data,y_data = graph_widget.getData()
 
     except AttributeError:
         print(f"No such data is available in the curve for signal {signal_name}")
