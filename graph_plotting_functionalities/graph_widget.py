@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox,
     QSizePolicy, QGroupBox, QSpacerItem, QLineEdit, QFileDialog,QMessageBox
 )
-from PyQt5.QtCore import QThread, Qt, QEvent
+from PyQt5.QtCore import QThread, Qt, QEvent, QTimer
 import pyqtgraph as pg
 
 from graph_plotting_functionalities.plotting import Signal_list
@@ -40,6 +40,10 @@ class GraphWidget(QWidget):
         self.initUI()
         self.setup_worker()
         self.destination.installEventFilter(self)
+        self.is_logging=False
+        self.logging_timer = QTimer()
+        self.logging_timer.setInterval(500)
+        self.logging_timer.timeout.connect(logg_csv)
 
     def initUI(self):
         main_layout = QVBoxLayout()
@@ -293,14 +297,28 @@ class GraphWidget(QWidget):
             self.destination.setToolTip(f"Selected: {destination_dir}")
 
     def on_start_logging(self):
-        print("Start logging clicked")
+        folder = self.destination.text()
+        if not folder:
+            QMessageBox.warning(self, "Warning", "Please select a destination folder.")
+            return
         self.start_btn.setEnabled(False)
         self.stop_btn.setEnabled(True)
         log_type=self.logger_combo_box.currentText()
         if log_type == "Select format":
             QMessageBox.warning(self,"Warning","Please choose a log format")
         elif log_type == "CSV":
-            logg_csv(self.curve,self.destination.text(),self.signal_name)
+            file_name=os.path(folder,f"{self.signal_name}.csv")
+            #writing headers
+            with open(file_name, 'w', newline='') as csvfile:
+                csv_writer = csv.writer(csvfile)
+                headers = ["Time (s)", "Amplitude"]
+                csv_writer.writerow(headers)
+
+            self.is_logging=True
+            self.logging_timer.start()
+
+
+
         elif log_type == "Binary":
             logg_binary(self.destination)
         else:
@@ -310,6 +328,8 @@ class GraphWidget(QWidget):
 
     def on_stop_logging(self):
         print("Stop logging clicked")
+        logg_start=False
+        logg_csv(logg_start)
         print(f"Logged file is saved to the file path: {self.destination} ")
         return 0
 
