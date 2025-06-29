@@ -1,3 +1,5 @@
+import csv
+import os
 import random
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox,
@@ -298,9 +300,9 @@ class GraphWidget(QWidget):
         if log_type == "Select format":
             QMessageBox.warning(self,"Warning","Please choose a log format")
         elif log_type == "CSV":
-            logg_csv()
+            logg_csv(self.curve,self.destination.text(),self.signal_name)
         elif log_type == "Binary":
-            logg_binary()
+            logg_binary(self.destination)
         else:
             return False
 

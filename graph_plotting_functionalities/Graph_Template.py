@@ -32,4 +32,5 @@ class GraphTemplate(QWidget):
 
     def add_curve(self, x_data, y_data, label="Signal", pen_color="r", width=5):
         pen = pg.mkPen(color=pen_color, width=width)
-        return self.plot.plot(x_data, y_data, pen=pen, name=label)
+        self.curve= self.plot.plot(x_data, y_data, pen=pen, name=label)
+        return self.curve   #stores the plot data
