@@ -24,13 +24,12 @@ class DataLogger:
         if not os.path.exists(self.directory):
             os.makedirs(self.directory)
 
-        file_path = os.path.join(self.directory, f"{self.signal_name}.csv")
-        with open(file_path, 'a', newline='') as csvfile:
+        self.file_path = os.path.join(self.directory, f"{self.signal_name}.csv")
+        with open(self.file_path, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
             for x, y in zip(x_data, y_data):
                 writer.writerow([x, y])
 
-        print(f"✅ Logged '{self.signal_name}' to {file_path}")
 
     def logg_binary(self):
         # Placeholder
