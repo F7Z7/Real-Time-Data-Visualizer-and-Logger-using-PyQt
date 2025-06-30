@@ -205,16 +205,16 @@ class GraphWidget(QWidget):
 
         # Logging action buttons
         button_layout = QHBoxLayout()
-        start_log_btn = QPushButton("Start Log")
-        stop_log_btn = QPushButton("Stop Log")
-        stop_log_btn.setEnabled(False)
+        self.start_log_btn = QPushButton("Start Log")
+        self.stop_log_btn = QPushButton("Stop Log")
+        self.stop_log_btn.setEnabled(False)
 
-        for btn in [start_log_btn, stop_log_btn]:
+        for btn in [self.start_log_btn, self.stop_log_btn]:
             btn.setFixedSize(90, 30)
             button_layout.addWidget(btn)
 
-        start_log_btn.clicked.connect(self.on_start_logging)
-        stop_log_btn.clicked.connect(self.on_stop_logging)
+        self.start_log_btn.clicked.connect(self.on_start_logging)
+        self.stop_log_btn.clicked.connect(self.on_stop_logging)
 
         logging_layout.addLayout(button_layout)
         logging_group.setLayout(logging_layout)
@@ -302,6 +302,7 @@ class GraphWidget(QWidget):
             self.destination.setToolTip(f"Selected: {destination_dir}")
 
     def on_start_logging(self):
+        print("Logging started ")
         folder = self.destination.text()
         if not folder:
             QMessageBox.warning(self, "Warning", "Please select a destination folder.")
@@ -329,14 +330,16 @@ class GraphWidget(QWidget):
             self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=folder)
             self.logger.logg_binary()
 
-        self.start_btn.setEnabled(False)
-        self.stop_btn.setEnabled(True)
+        self.stop_log_btn.setEnabled(True)
+        self.start_log_btn.setEnabled(False)
 
     def on_stop_logging(self):
-        print("Stop logging clicked")
+        print("Logging stopped ")
         self.is_logging = False
+        self.stop_log_btn.setEnabled(False)
+        self.start_log_btn.setEnabled(True)
         self.logging_timer.stop()
-        print(f"Logged file is saved to: {self.destination.text()}")
+        print(f"Logged file is saved to: {self.destination.text()} as {self.logger_combo_box.currentText()} file ")
 
     def eventFilter(self, obj, event):
         if obj == self.destination and event.type() == QEvent.MouseButtonPress:
