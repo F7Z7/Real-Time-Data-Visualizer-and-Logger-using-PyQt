@@ -9,7 +9,7 @@ from PyQt5.QtCore import QThread, Qt, QEvent, QTimer
 import pyqtgraph as pg
 
 from graph_plotting_functionalities.plotting import Signal_list
-from src.data_logger import logg_csv, logg_binary
+from src.data_logger import DataLogger
 from src.data_worker import DataWorker
 from graph_plotting_functionalities.Graph_Template import GraphTemplate
 
@@ -36,14 +36,20 @@ class GraphWidget(QWidget):
         self.pen_color = self.generate_color()
         self.pen_width = 3
         self.curve = None
+        self.logger = None
+        self.is_logging = False
 
         self.initUI()
         self.setup_worker()
         self.destination.installEventFilter(self)
-        self.is_logging=False
         self.logging_timer = QTimer()
         self.logging_timer.setInterval(500)
-        self.logging_timer.timeout.connect(logg_csv)
+        self.logging_timer.timeout.connect(self.log_periodically)
+
+    def log_periodically(self):
+        if self.is_logging and self.logger:
+            #if both start log pressed and logger is active
+            self.logger.logg_csv()
 
     def initUI(self):
         main_layout = QVBoxLayout()
@@ -289,7 +295,6 @@ class GraphWidget(QWidget):
         plot_widget = self.graph_template.plot
         plot_widget.enableAutoRange(axis=pg.ViewBox.XYAxes, enable=True)
 
-
     def select_folder(self):
         destination_dir = QFileDialog.getExistingDirectory()
         if destination_dir:
@@ -301,38 +306,37 @@ class GraphWidget(QWidget):
         if not folder:
             QMessageBox.warning(self, "Warning", "Please select a destination folder.")
             return
-        self.start_btn.setEnabled(False)
-        self.stop_btn.setEnabled(True)
-        log_type=self.logger_combo_box.currentText()
+
+        log_type = self.logger_combo_box.currentText()
         if log_type == "Select format":
-            QMessageBox.warning(self,"Warning","Please choose a log format")
-        elif log_type == "CSV":
-            file_name=os.path(folder,f"{self.signal_name}.csv")
-            #writing headers
-            with open(file_name, 'w', newline='') as csvfile:
+            QMessageBox.warning(self, "Warning", "Please choose a log format")
+            return
+
+        file_path = os.path.join(folder, f"{self.signal_name}.csv")
+
+        if log_type == "CSV":
+            with open(file_path, 'w', newline='') as csvfile:
                 csv_writer = csv.writer(csvfile)
                 headers = ["Time (s)", "Amplitude"]
                 csv_writer.writerow(headers)
 
-            self.is_logging=True
+            self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=folder)
+            self.is_logging = True #flag true so data will be logging
             self.logging_timer.start()
 
-
-
         elif log_type == "Binary":
-            logg_binary(self.destination)
-        else:
-            return False
 
-        return 0
+            self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=folder)
+            self.logger.logg_binary()
+
+        self.start_btn.setEnabled(False)
+        self.stop_btn.setEnabled(True)
 
     def on_stop_logging(self):
         print("Stop logging clicked")
-        logg_start=False
-        logg_csv(logg_start)
-        print(f"Logged file is saved to the file path: {self.destination} ")
-        return 0
-
+        self.is_logging = False
+        self.logging_timer.stop()
+        print(f"Logged file is saved to: {self.destination.text()}")
 
     def eventFilter(self, obj, event):
         if obj == self.destination and event.type() == QEvent.MouseButtonPress:
