@@ -1,6 +1,6 @@
 import csv
 import os
-
+import struct
 class DataLogger:
     def __init__(self, curve, signal_name, directory):
         self.curve = curve
@@ -30,7 +30,24 @@ class DataLogger:
             for x, y in zip(x_data, y_data):
                 writer.writerow([x, y])
 
-
     def logg_binary(self):
-        # Placeholder
-        pass
+        if not self.curve:
+            print("No curve to log.")
+            return
+
+        try:
+            x_data, y_data = self.curve.getData()
+            if x_data is None or y_data is None:
+                print("Curve data is empty.")
+                return
+        except AttributeError:
+            print(f" No such data is available in the curve for signal '{self.signal_name}'")
+            return
+
+        if not os.path.exists(self.directory):
+            os.makedirs(self.directory)
+
+        self.file_path = os.path.join(self.directory, f"{self.signal_name}.bin")
+        with open(self.file_path, 'ab') as binfile:
+            for x, y in zip(x_data, y_data):
+                binfile.write(struct.pack('dd', x, y)) #dd indicates flota64

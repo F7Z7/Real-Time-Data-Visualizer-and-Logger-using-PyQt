@@ -1,6 +1,8 @@
 import csv
 import os
 import random
+import struct
+
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox,
     QSizePolicy, QGroupBox, QSpacerItem, QLineEdit, QFileDialog,QMessageBox
@@ -329,6 +331,9 @@ class GraphWidget(QWidget):
             self.logging_timer.start()
 
         elif log_type == "Binary":
+            with open(file_path, 'w', newline='') as binfile:
+                headers = ["Time (s)", "Amplitude"]
+                binfile.write(struct.pack('dd',headers))
 
             self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=folder)
             self.is_logging = True  # flag true so data will be logging
