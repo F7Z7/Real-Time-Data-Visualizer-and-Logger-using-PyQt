@@ -49,7 +49,10 @@ class GraphWidget(QWidget):
     def log_periodically(self):
         if self.is_logging and self.logger:
             #if both start log pressed and logger is active
-            self.logger.logg_csv()
+            if  self.logger_combo_box.currentText()=="CSV":
+                self.logger.logg_csv()
+            elif self.logger_combo_box.currentText()=="Binary":
+                self.logger.logg_binary()
 
     def initUI(self):
         main_layout = QVBoxLayout()
