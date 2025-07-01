@@ -331,7 +331,8 @@ class GraphWidget(QWidget):
         elif log_type == "Binary":
 
             self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=folder)
-            self.logger.logg_binary()
+            self.is_logging = True  # flag true so data will be logging
+            self.logging_timer.start()
 
         self.stop_log_btn.setEnabled(True)
         self.start_log_btn.setEnabled(False)
