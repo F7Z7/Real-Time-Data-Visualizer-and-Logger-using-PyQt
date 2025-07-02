@@ -132,6 +132,7 @@ class GraphWidget(QWidget):
     def create_zoom_controls(self, parent_layout):
         """Create zoom control section"""
         zoom_group = QGroupBox("Zoom & Scale")
+        parent_zoom_layout = QHBoxLayout()
         zoom_layout = QVBoxLayout()
         zoom_layout.setSpacing(8)
 
@@ -166,7 +167,10 @@ class GraphWidget(QWidget):
         self.zoom_out_btn.clicked.connect(self.zoom_out)
         self.auto_scale_btn.clicked.connect(self.auto_scale)
 
-        zoom_group.setLayout(zoom_layout)
+        parent_zoom_layout.addLayout(zoom_layout)
+
+
+        zoom_group.setLayout(parent_zoom_layout)
         parent_layout.addWidget(zoom_group)
 
     def create_logging_controls(self, parent_layout):
