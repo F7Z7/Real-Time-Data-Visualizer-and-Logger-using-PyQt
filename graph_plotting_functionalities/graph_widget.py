@@ -169,7 +169,22 @@ class GraphWidget(QWidget):
 
         parent_zoom_layout.addLayout(zoom_layout)
 
+        #adding a section for slection of the amplitude ranges
+        input_range=QVBoxLayout()
+        input_range.setSpacing(8)
+        input_grps = {
+            "Enter desired range": "e.g. 1-10s",
+            "Enter desired amplitude": "e.g. -1 to 1"
+        }
+        for label_text, placeholder in input_grps.items():
+            label = QLabel(label_text)
+            lineEdit = QLineEdit()
+            lineEdit.setPlaceholderText(placeholder)
 
+            input_range.addWidget(label)
+            input_range.addWidget(lineEdit)
+
+        parent_zoom_layout.addLayout(input_range)
         zoom_group.setLayout(parent_zoom_layout)
         parent_layout.addWidget(zoom_group)
 
