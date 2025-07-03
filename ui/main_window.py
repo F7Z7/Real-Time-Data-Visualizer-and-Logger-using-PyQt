@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
     QHBoxLayout, QLabel, QComboBox, QLineEdit, QMessageBox, QFileDialog, QCheckBox
 )
-from PyQt5.QtCore import Qt, QThread
+from PyQt5.QtCore import Qt, QThread, QEvent
 import numpy as np
 import pyqtgraph as pg
 
@@ -114,6 +114,23 @@ class MainWindow(QMainWindow):
             row_layout = create_button_row(group)
             control_layout.addLayout(row_layout)
 
+        format_layout = QHBoxLayout()
+        format_layout.addWidget(QLabel("Format:"))
+        self.logger_combo_box = QComboBox()
+        self.logger_combo_box.addItems(["Select format", "CSV", "Binary"])
+        self.logger_combo_box.setFixedWidth(100)
+        format_layout.addWidget(self.logger_combo_box)
+        format_layout.addStretch()
+        control_layout.addLayout(format_layout)
+
+        size_layout = QHBoxLayout()
+        size_layout.addWidget(QLabel("Max Size:"))
+        self.size_combo = QComboBox()
+        self.size_combo.addItems(["1MB", "5MB", "10MB", "50MB", "100MB"])
+        self.size_combo.setFixedWidth(100)
+        size_layout.addWidget(self.size_combo)
+        size_layout.addStretch()
+
         # Signal visibility
         signal_row = QVBoxLayout()
         self.choices = ["Show Resultant Plot", "Show Signal A", "Show Signal B", "Show X-Y Plot"]
@@ -205,3 +222,15 @@ class MainWindow(QMainWindow):
             self.worker.stop_work()
             self.worker_thread.quit()
             self.worker_thread.wait()
+
+    def eventFilter(self, obj, event):
+        if obj == self.destination and event.type() == QEvent.MouseButtonPress:
+            self.select_folder()
+            return True
+        return super().eventFilter(obj, event)
+
+    def select_folder(self):
+        folder = QFileDialog.getExistingDirectory()
+        if folder:
+            self.destination.setText(folder)
+            self.destination.setToolTip(f"Selected: {folder}")

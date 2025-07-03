@@ -263,13 +263,6 @@ class GraphWidget(QWidget):
 
         file_path = os.path.join(folder, f"{self.signal_name}_{self.graph_id}.csv")
 
-        if log_type == "CSV":
-            with open(file_path, 'w', newline='') as f:
-                csv.writer(f).writerow(["Time (s)", "Amplitude"])
-        elif log_type == "Binary":
-            with open(file_path, 'wb') as f:
-                f.write(struct.pack('2d', 0.0, 0.0))  # placeholder
-
         self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=folder)
         self.is_logging = True
         self.logging_timer.start()
@@ -289,14 +282,5 @@ class GraphWidget(QWidget):
     def stop_logg(self):
         self.stop_logging()
 
-    def eventFilter(self, obj, event):
-        if obj == self.destination and event.type() == QEvent.MouseButtonPress:
-            self.select_folder()
-            return True
-        return super().eventFilter(obj, event)
 
-    def select_folder(self):
-        folder = QFileDialog.getExistingDirectory()
-        if folder:
-            self.destination.setText(folder)
-            self.destination.setToolTip(f"Selected: {folder}")
+
