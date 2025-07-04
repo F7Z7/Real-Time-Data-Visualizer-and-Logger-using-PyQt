@@ -185,6 +185,7 @@ class MainWindow(QMainWindow):
     def on_start_logging(self):
         destination=self.destination.text()
         log_format=self.logger_combo_box.currentText()
+        print("start clicked")
         # size=self.size_combo.currentText() will be used after some time setting the size
         if log_format == "Select format":
             QMessageBox.warning(self, "Warning", "Please select a valid file format.")

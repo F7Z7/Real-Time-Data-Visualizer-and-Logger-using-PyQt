@@ -49,9 +49,9 @@ class GraphWidget(QWidget):
 
     def log_periodically(self):
         if self.is_logging and self.logger:
-            if self.logger_combo_box.currentText() == "CSV":
+            if self.log_format== "CSV":
                 self.logger.logg_csv()
-            elif self.logger_combo_box.currentText() == "Binary":
+            elif self.log_format == "Binary":
                 self.logger.logg_binary()
 
     def initUI(self):
@@ -258,37 +258,29 @@ class GraphWidget(QWidget):
             height = (y_range[1] - y_range[0]) * factor
             pw.setYRange(y_center - height/2, y_center + height/2)
 
-    def start_logging(self):
-        folder = self.destination.text()
-        if not folder:
+    def start_logging(self,destinaion,log_format):
+        print("here")
+        self.folder=destinaion
+        self.log_format = log_format
+        if not self.folder:
             QMessageBox.warning(self, "Warning", "Please select a destination folder.")
             return
 
-        log_type = self.logger_combo_box.currentText()
-        if log_type == "Select format":
+        if self.log_format == "Select format":
             QMessageBox.warning(self, "Warning", "Please choose a log format")
             return
 
-        file_path = os.path.join(folder, f"{self.signal_name}_{self.graph_id}.csv")
+        file_path = os.path.join(self.folder, f"{self.signal_name}_{self.graph_id}.csv")
 
-        self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=folder)
+        self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=self.folder)
         self.is_logging = True
         self.logging_timer.start()
-        self.start_log_btn.setEnabled(False)
-        self.stop_log_btn.setEnabled(True)
 
     def stop_logging(self):
         self.is_logging = False
         self.logging_timer.stop()
-        self.start_log_btn.setEnabled(True)
-        self.stop_log_btn.setEnabled(False)
-        print(f"Log saved in {self.destination.text()} as {self.logger_combo_box.currentText()}")
-
-    def start_log(self):
-        self.start_logging()
-
-    def stop_logg(self):
-        self.stop_logging()
+        print(f"Log saved in {self.folder} as {self.log_format}")
+        print("stop reached here")
 
 
 
