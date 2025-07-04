@@ -107,29 +107,51 @@ class MainWindow(QMainWindow):
         # Global Buttons
         button_groups = [
             [("Start All", self.on_click_start), ("Stop All", self.on_click_stop)],
-            [("Start Log", self.on_start_logging), ("Stop Log", self.on_stop_logging)],
             [("Auto-Scale", self.auto_scale), ("Reset All", self.reset_plot)],
         ]
         for group in button_groups:
             row_layout = create_button_row(group)
             control_layout.addLayout(row_layout)
+        zoom_layout = QVBoxLayout()
+        zoom_layout.addWidget(QLabel("Zoom Axis:"))
+        self.zoom_combo_box = QComboBox()
+        self.zoom_combo_box.addItems(["X Axis", "Y Axis", "Both"])
+        zoom_layout.addWidget(self.zoom_combo_box)
 
-        format_layout = QHBoxLayout()
-        format_layout.addWidget(QLabel("Format:"))
+        zoom_btn_layout = create_button_row([
+            ("＋ Zoom In", self.zoom_in),
+            ("－ Zoom Out", self.zoom_out)
+        ])
+        zoom_layout.addLayout(zoom_btn_layout)
+        control_layout.addLayout(zoom_layout)
+
+        # File Format
+        control_layout.addWidget(QLabel("File Format:"))
         self.logger_combo_box = QComboBox()
         self.logger_combo_box.addItems(["Select format", "CSV", "Binary"])
-        self.logger_combo_box.setFixedWidth(100)
-        format_layout.addWidget(self.logger_combo_box)
-        format_layout.addStretch()
-        control_layout.addLayout(format_layout)
+        control_layout.addWidget(self.logger_combo_box)
 
-        size_layout = QHBoxLayout()
-        size_layout.addWidget(QLabel("Max Size:"))
+        # File Size
+        control_layout.addWidget(QLabel("Max Size:"))
         self.size_combo = QComboBox()
         self.size_combo.addItems(["1MB", "5MB", "10MB", "50MB", "100MB"])
-        self.size_combo.setFixedWidth(100)
-        size_layout.addWidget(self.size_combo)
-        size_layout.addStretch()
+        control_layout.addWidget(self.size_combo)
+
+        # Destination selection
+        control_layout.addWidget(QLabel("Select Destination:"))
+        self.destination = QLineEdit()
+        self.destination.setPlaceholderText("Click to select folder...")
+        self.destination.setReadOnly(True)
+        self.destination.setCursor(Qt.PointingHandCursor)
+        self.destination.mousePressEvent = lambda e: self.select_folder()
+        control_layout.addWidget(self.destination)
+
+        # Start/Stop Logging
+        log_btns = create_button_row([
+            ("Start Log", self.on_start_logging),
+            ("Stop Log", self.on_stop_logging)
+        ])
+        control_layout.addLayout(log_btns)
 
         # Signal visibility
         signal_row = QVBoxLayout()
@@ -161,7 +183,16 @@ class MainWindow(QMainWindow):
         self.generate_graph_widget.stop_all()
 
     def on_start_logging(self):
-        self.generate_graph_widget.start_logging_all()
+        destination=self.destination.text()
+        log_format=self.logger_combo_box.currentText()
+        # size=self.size_combo.currentText() will be used after some time setting the size
+        if log_format == "Select format":
+            QMessageBox.warning(self, "Warning", "Please select a valid file format.")
+            return
+        if not destination:
+            QMessageBox.warning(self, "Warning", "Please select a destination folder.")
+            return
+        self.generate_graph_widget.start_logging_all(log_format,destination)
 
     def on_stop_logging(self):
         self.generate_graph_widget.stop_logging_all()
@@ -234,3 +265,13 @@ class MainWindow(QMainWindow):
         if folder:
             self.destination.setText(folder)
             self.destination.setToolTip(f"Selected: {folder}")
+
+    def zoom_in(self):
+        zoom_mode = self.zoom_combo_box.currentText()
+        for graph in self.generate_graph_widget.graphs:
+            graph.zoom_in_all(zoom_mode)
+
+    def zoom_out(self):
+        zoom_mode = self.zoom_combo_box.currentText()
+        for graph in self.generate_graph_widget.graphs:
+            graph.zoom_out_all(zoom_mode)
