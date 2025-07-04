@@ -259,7 +259,6 @@ class GraphWidget(QWidget):
             pw.setYRange(y_center - height/2, y_center + height/2)
 
     def start_logging(self,destinaion,log_format):
-        print("here")
         self.folder=destinaion
         self.log_format = log_format
         if not self.folder:
@@ -280,7 +279,6 @@ class GraphWidget(QWidget):
         self.is_logging = False
         self.logging_timer.stop()
         print(f"Log saved in {self.folder} as {self.log_format}")
-        print("stop reached here")
 
 
 

@@ -89,7 +89,6 @@ class Generate_Graph(QWidget):
             graph.reset_plot()
 
     def start_logging_all(self, log_format, destination):
-        print("start_logging_all")
 
         for graph in self.graphs:
             # graph.size_combo.setCurrentText(size)
