@@ -183,16 +183,25 @@ class MainWindow(QMainWindow):
         self.generate_graph_widget.stop_all()
 
     def on_start_logging(self):
-        destination=self.destination.text()
-        log_format=self.logger_combo_box.currentText()
-        size=self.size_combo.currentText()
+        destination = self.destination.text()
+        log_format = self.logger_combo_box.currentText()
+        size = self.size_combo.currentText()
         if log_format == "Select format":
             QMessageBox.warning(self, "Warning", "Please select a valid file format.")
             return
         if not destination:
             QMessageBox.warning(self, "Warning", "Please select a destination folder.")
             return
-        self.generate_graph_widget.start_logging_all(log_format,destination,size)
+
+        size_map = {
+            "1MB": 1 * 1024 * 1024,
+            "5MB": 5 * 1024 * 1024,
+            "10MB": 10 * 1024 * 1024,
+            "50MB": 50 * 1024 * 1024,
+            "100MB": 100 * 1024 * 1024,
+        }
+        max_size=size_map.get(size,1*1024*1024) #default is 1mb
+        self.generate_graph_widget.start_logging_all(log_format, destination, max_size)
 
     def on_stop_logging(self):
         self.generate_graph_widget.stop_logging_all()
