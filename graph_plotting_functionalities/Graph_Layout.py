@@ -88,11 +88,11 @@ class Generate_Graph(QWidget):
         for graph in self.graphs:
             graph.reset_plot()
 
-    def start_logging_all(self, log_format, destination):
+    def start_logging_all(self, log_format, destination,max_file_size):
 
         for graph in self.graphs:
             # graph.size_combo.setCurrentText(size)
-            graph.start_logging(destination,log_format)
+            graph.start_logging(destination,max_file_size,log_format)
 
     def stop_logging_all(self):
         for graph in self.graphs:

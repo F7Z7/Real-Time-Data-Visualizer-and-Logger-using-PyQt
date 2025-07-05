@@ -258,7 +258,7 @@ class GraphWidget(QWidget):
             height = (y_range[1] - y_range[0]) * factor
             pw.setYRange(y_center - height/2, y_center + height/2)
 
-    def start_logging(self,destinaion,log_format):
+    def start_logging(self,destinaion,max_file_size,log_format):
         self.folder=destinaion
         self.log_format = log_format
         if not self.folder:

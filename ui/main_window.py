@@ -185,14 +185,14 @@ class MainWindow(QMainWindow):
     def on_start_logging(self):
         destination=self.destination.text()
         log_format=self.logger_combo_box.currentText()
-        # size=self.size_combo.currentText() will be used after some time setting the size
+        size=self.size_combo.currentText()
         if log_format == "Select format":
             QMessageBox.warning(self, "Warning", "Please select a valid file format.")
             return
         if not destination:
             QMessageBox.warning(self, "Warning", "Please select a destination folder.")
             return
-        self.generate_graph_widget.start_logging_all(log_format,destination)
+        self.generate_graph_widget.start_logging_all(log_format,destination,size)
 
     def on_stop_logging(self):
         self.generate_graph_widget.stop_logging_all()
