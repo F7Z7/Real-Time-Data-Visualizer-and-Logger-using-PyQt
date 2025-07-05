@@ -272,7 +272,7 @@ class GraphWidget(QWidget):
 
         file_path = os.path.join(self.folder, f"{self.signal_name}_{self.graph_id}.csv")
         self.file_size=max_file_size
-        self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=self.folder,max_file_size=self.file_size)
+        self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=self.folder,max_file_size=self.file_size,new_file=create_new_file)
         self.is_logging = True
         self.logging_timer.start()
 
