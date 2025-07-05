@@ -29,6 +29,7 @@ def create_button_row(pairs):
 class GraphWidget(QWidget):
     def __init__(self, graph_id, mode="operation", signal1="Sin", signal2="Cos", num=1):
         super().__init__()
+        self.file_size = None
         self.graph_id = graph_id
         self.mode = mode
         self.signal_name = signal1
@@ -258,7 +259,7 @@ class GraphWidget(QWidget):
             height = (y_range[1] - y_range[0]) * factor
             pw.setYRange(y_center - height/2, y_center + height/2)
 
-    def start_logging(self,destinaion,max_file_size,log_format):
+    def start_logging(self,destinaion,max_file_size,log_format,create_new_file:bool):
         self.folder=destinaion
         self.log_format = log_format
         if not self.folder:
@@ -270,8 +271,8 @@ class GraphWidget(QWidget):
             return
 
         file_path = os.path.join(self.folder, f"{self.signal_name}_{self.graph_id}.csv")
-
-        self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=self.folder)
+        self.file_size=max_file_size
+        self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=self.folder,max_file_size=self.file_size)
         self.is_logging = True
         self.logging_timer.start()
 
