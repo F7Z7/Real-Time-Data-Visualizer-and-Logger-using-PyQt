@@ -136,6 +136,9 @@ class MainWindow(QMainWindow):
         self.size_combo = QComboBox()
         self.size_combo.addItems(["1MB", "5MB", "10MB", "50MB", "100MB"])
         control_layout.addWidget(self.size_combo)
+        self.new_file=QComboBox()
+        self.new_file.addItems(["Stop when file size exceed the limit","Create a new file after limit is exceeded"])
+        control_layout.addWidget(self.new_file)
 
         # Destination selection
         control_layout.addWidget(QLabel("Select Destination:"))
@@ -186,6 +189,10 @@ class MainWindow(QMainWindow):
         destination = self.destination.text()
         log_format = self.logger_combo_box.currentText()
         size = self.size_combo.currentText()
+        if self.new_file.currentText() == "Stop when file size exceed the limit":
+            create_new_file=True
+        else:
+            create_new_file=False
         if log_format == "Select format":
             QMessageBox.warning(self, "Warning", "Please select a valid file format.")
             return
@@ -201,7 +208,7 @@ class MainWindow(QMainWindow):
             "100MB": 100 * 1024 * 1024,
         }
         max_size=size_map.get(size,1*1024*1024) #default is 1mb
-        self.generate_graph_widget.start_logging_all(log_format, destination, max_size)
+        self.generate_graph_widget.start_logging_all(log_format, destination, max_size,create_new_file)
 
     def on_stop_logging(self):
         self.generate_graph_widget.stop_logging_all()
