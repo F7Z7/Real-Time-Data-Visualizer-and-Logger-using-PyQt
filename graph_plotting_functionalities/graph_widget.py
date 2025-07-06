@@ -308,5 +308,22 @@ class GraphWidget(QWidget):
         self.logging_timer.stop()
         print(f"Log saved in {self.folder} as {self.log_format}")
 
+    def on_reformat_clicked(self):
+        try:
+            x_min = float(self.range_from_input.text())
+            x_max = float(self.range_to_input.text())
+            y_min = float(self.amplitude_from_input.text())
+            y_max = float(self.amplitude_to_input.text())
+
+            if x_min > x_max or y_min > y_max:
+                QMessageBox.warning(self, "Invalid Input", "Minimum must be less than Maximum for both axes.")
+                return
+
+            self.graph_template.plot.setXRange(x_min, x_max)
+            self.graph_template.plot.setYRange(y_min, y_max)
+
+        except ValueError:
+
+            QMessageBox.critical(self,"Input Error","THe input must be an integer or float")
 
 
