@@ -124,16 +124,43 @@ class GraphWidget(QWidget):
     #     parent_zoom.addLayout(layout)
     def create_range_controls(self, parent_layout):
         group = QGroupBox("Zoom Range & Amplitude")
+        range_amplitude_layout = QVBoxLayout()
+#x axis setting
         range_layout = QVBoxLayout()
-        for label_text, placeholder in {
-            "Enter desired range": "e.g. 1-10s",
-            "Enter desired amplitude": "e.g. -1 to 1"
-        }.items():
-            range_layout.addWidget(QLabel(label_text))
-            le = QLineEdit()
-            le.setPlaceholderText(placeholder)
-            range_layout.addWidget(le)
-        group.setLayout(range_layout)
+        range_layout.addWidget(QLabel("Enter Desired Range: -10s to 10s"))
+
+        range_input_line_edit_layout = QHBoxLayout()
+        self.range_from_input = QLineEdit()
+        self.range_from_input.setPlaceholderText("From")
+        self.range_to_input = QLineEdit()
+        self.range_to_input.setPlaceholderText("To")
+
+        for line_edit in [self.range_from_input, self.range_to_input]:
+            range_input_line_edit_layout.addWidget(line_edit)
+
+        range_layout.addLayout(range_input_line_edit_layout)
+#yaxis setting
+        amplitude_layout = QVBoxLayout()
+        amplitude_layout.addWidget(QLabel("Enter Desired Amplitude: -1 to 1"))
+
+        amplitude_input_line_edit_layout = QHBoxLayout()
+        self.amplitude_from_input = QLineEdit()
+        self.amplitude_from_input.setPlaceholderText("From")
+        self.amplitude_to_input = QLineEdit()
+        self.amplitude_to_input.setPlaceholderText("To")
+
+        for line_edit in [self.amplitude_from_input, self.amplitude_to_input]:
+            amplitude_input_line_edit_layout.addWidget(line_edit)
+
+        amplitude_layout.addLayout(amplitude_input_line_edit_layout)
+
+       #combining both
+        for layout in [range_layout, amplitude_layout]:
+            range_amplitude_layout.addLayout(layout)
+        reformat_btn=QPushButton("Reformat the axes")
+        reformat_btn.clicked.connect(self.on_reformat_clicked)
+        range_amplitude_layout.addWidget(reformat_btn)
+        group.setLayout(range_amplitude_layout)
         parent_layout.addWidget(group)
 
     # def create_logging_controls(self, parent_layout):
