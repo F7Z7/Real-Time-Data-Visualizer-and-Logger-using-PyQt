@@ -35,7 +35,8 @@ class AxisRangeDialog(QDialog):
         x_label_input_row=create_label_input_row([
             ("Minimum X", self.input_x_min),("Maximum X", self.input_x_max)
         ])
-        x_layout.addLayout(x_label_input_row)
+        x_box.setLayout(x_layout)
+        main_layout.addWidget(x_box)
 
         #y axies group
         y_box = QGroupBox("X Axis Range")
@@ -50,7 +51,8 @@ class AxisRangeDialog(QDialog):
             ("Minimum Y", self.input_y_min), ("Maximum Y", self.input_y_max)
         ])
         y_layout.addLayout(y_label_input_row)
-
+        y_box.setLayout(y_layout)
+        main_layout.addWidget(y_box)
 
         #adding final buttons
         button_layout = QHBoxLayout()
@@ -59,10 +61,10 @@ class AxisRangeDialog(QDialog):
         self.apply_button.clicked.connect(self.on_apply_clicked)
         self.cancel_button = QPushButton("Cancel")
         self.cancel_button.setToolTip("Cancel this dialog")
-        self.apply_button.clicked.connect(self.on_cancel_clicked)
+        self.cancel_button.clicked.connect(self.on_cancel_clicked)
         self.reset_button = QPushButton("Reset")
         self.reset_button.setToolTip("Reset to old values")
-        self.apply_button.clicked.connect(self.on_reset_clicked)
+        self.reset_button.clicked.connect(self.on_reset_clicked)
 
 
         for buttons in [self.apply_button, self.cancel_button, self.reset_button]:
@@ -99,3 +101,7 @@ class AxisRangeDialog(QDialog):
         self.input_x_max.clear()
         self.input_y_min.clear()
         self.input_y_max.clear()
+
+    def get_ranges(self):
+        print("here hehe")
+        return self._x_min, self._x_max, self._y_min, self._y_max
