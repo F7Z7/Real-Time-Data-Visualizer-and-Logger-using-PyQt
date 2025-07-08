@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import QThread, Qt, QEvent, QTimer, QCoreApplication
 import pyqtgraph as pg
-
+from graph_plotting_functionalities.AxisRangeDialog import AxisRangeDialog
 from graph_plotting_functionalities.plotting import Signal_list
 from src.data_logger import DataLogger
 from src.data_worker import DataWorker
@@ -48,6 +48,7 @@ class GraphWidget(QWidget):
         self.logging_timer.setInterval(500)
         self.logging_timer.timeout.connect(self.log_periodically)
 
+        dialog= AxisRangeDialog()
     def log_periodically(self):
         if self.is_logging and self.logger:
             if self.log_format== "CSV":
