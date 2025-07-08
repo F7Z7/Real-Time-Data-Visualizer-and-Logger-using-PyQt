@@ -48,7 +48,8 @@ class GraphWidget(QWidget):
         self.logging_timer.setInterval(500)
         self.logging_timer.timeout.connect(self.log_periodically)
 
-        dialog= AxisRangeDialog()
+        self.dialog= AxisRangeDialog()
+        self.graph_template.plot.scene().sigMouseClicked.connect(self.on_plot_clicked) #this for so that the diaolgue box appaers when the clicked on the plot
     def log_periodically(self):
         if self.is_logging and self.logger:
             if self.log_format== "CSV":
@@ -310,23 +311,16 @@ class GraphWidget(QWidget):
         self.is_logging = False
         self.logging_timer.stop()
         print(f"Log saved in {self.folder} as {self.log_format}")
-
+    def on_plot_clicked(self,event):
+        if event.button() == Qt.RightButton:
+            print("right click detected")
+            self.on_reformat_clicked()
     def on_reformat_clicked(self):
-        try:
-            x_min = float(self.range_from_input.text())
-            x_max = float(self.range_to_input.text())
-            y_min = float(self.amplitude_from_input.text())
-            y_max = float(self.amplitude_to_input.text())
-
-            if x_min > x_max or y_min > y_max:
-                QMessageBox.warning(self, "Invalid Input", "Minimum must be less than Maximum for both axes.")
-                return
-
+        print("function call here")
+        if self.dialog.exec_()==self.dialog.Accepted:
+            print("function didn reach here")
+            x_min, x_max, y_min, y_max = self.dialog.get_ranges()
             self.graph_template.plot.setXRange(x_min, x_max)
             self.graph_template.plot.setYRange(y_min, y_max)
-
-        except ValueError:
-
-            QMessageBox.critical(self,"Input Error","THe input must be an integer or float")
 
 
