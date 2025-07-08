@@ -23,16 +23,30 @@ class AxisRangeDialog(QDialog):
 
         main_layout = QVBoxLayout()
 
-        # === X Axis Group ===
+        # x axis
         x_box = QGroupBox("X Axis Range")
         x_layout = QVBoxLayout()
 
         self.input_x_min = QLineEdit()
-        self.input_x_min.setPlaceholderText("eg:-500")
+        self.input_x_min.setPlaceholderText("eg:100")
         self.input_x_max = QLineEdit()
         self.input_x_max.setPlaceholderText(" eg:500")
 
-        label_input_row=create_label_input_row([
+        x_label_input_row=create_label_input_row([
             ("Minimum X", self.input_x_min),("Maximum X", self.input_x_max)
         ])
-        x_layout.addLayout(label_input_row)
+        x_layout.addLayout(x_label_input_row)
+
+        #y axies group
+        y_box = QGroupBox("X Axis Range")
+        y_layout = QVBoxLayout()
+
+        self.input_y_min = QLineEdit()
+        self.input_y_min.setPlaceholderText("eg:-500")
+        self.input_y_max = QLineEdit()
+        self.input_y_max.setPlaceholderText(" eg:500")
+
+        y_label_input_row = create_label_input_row([
+            ("Minimum Y", self.input_y_min), ("Maximum Y", self.input_y_max)
+        ])
+        y_layout.addLayout(y_label_input_row)
