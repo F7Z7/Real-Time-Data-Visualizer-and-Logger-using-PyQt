@@ -102,5 +102,11 @@ class AxisRangeDialog(QDialog):
         self.input_y_min.clear()
         self.input_y_max.clear()
 
+    def set_fields(self,view_range):
+        self.input_x_min.setText(str(view_range[0][0])[:8])
+        self.input_x_max.setText(str(view_range[0][1])[:8])
+        self.input_y_min.setText(str(view_range[1][0])[:5])
+        self.input_y_max.setText(str(view_range[1][1])[:5])
+
     def get_ranges(self):
         return self._x_min, self._x_max, self._y_min, self._y_max

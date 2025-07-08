@@ -316,7 +316,8 @@ class GraphWidget(QWidget):
             print("right click detected")
             self.on_reformat_clicked()
     def on_reformat_clicked(self):
-        print("function call here")
+        view_range=self.graph_template.plot.viewRange()
+        self.dialog.set_fields(view_range)
         if self.dialog.exec_()==self.dialog.Accepted:
             print("function didn reach here")
             x_min, x_max, y_min, y_max = self.dialog.get_ranges()
