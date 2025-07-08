@@ -86,9 +86,9 @@ class GraphWidget(QWidget):
         # self.create_zoom_controls(controls_layout)
         # self.add_vertical_separator(controls_layout)
         # self.create_logging_controls(controls_layout)
-        self.create_range_controls(controls_layout)
-        controls_box.setLayout(controls_layout)
-        parent_layout.addWidget(controls_box)
+        # self.create_range_controls(controls_layout)
+        # controls_box.setLayout(controls_layout)
+        # parent_layout.addWidget(controls_box)
 
     # def create_playback_controls(self, parent_layout):
     #     playback_group = QGroupBox("Playback")
@@ -122,46 +122,49 @@ class GraphWidget(QWidget):
     #         layout.addWidget(btn)
     #
     #     parent_zoom.addLayout(layout)
-    def create_range_controls(self, parent_layout):
-        group = QGroupBox("Zoom Range & Amplitude")
-        range_amplitude_layout = QVBoxLayout()
-#x axis setting
-        range_layout = QVBoxLayout()
-        range_layout.addWidget(QLabel("Enter Desired Range: -10s to 10s"))
+#     def create_range_controls(self, parent_layout):
+#         group = QGroupBox("Zoom Range & Amplitude")
+#         range_amplitude_layout = QVBoxLayout()
+# #x axis setting
+#         range_layout = QVBoxLayout()
+#         range_layout.addWidget(QLabel("Enter Desired Range: -10s to 10s"))
+#
+#         range_input_line_edit_layout = QHBoxLayout()
+#         self.range_from_input = QLineEdit()
+#         self.range_from_input.setPlaceholderText("From")
+#         self.range_to_input = QLineEdit()
+#         self.range_to_input.setPlaceholderText("To")
+#
+#         for line_edit in [self.range_from_input, self.range_to_input]:
+#             range_input_line_edit_layout.addWidget(line_edit)
+#
+#         range_layout.addLayout(range_input_line_edit_layout)
+# #yaxis setting
+#         amplitude_layout = QVBoxLayout()
+#         amplitude_layout.addWidget(QLabel("Enter Desired Amplitude: -1 to 1"))
+#
+#         amplitude_input_line_edit_layout = QHBoxLayout()
+#         self.amplitude_from_input = QLineEdit()
+#         self.amplitude_from_input.setPlaceholderText("From")
+#         self.amplitude_to_input = QLineEdit()
+#         self.amplitude_to_input.setPlaceholderText("To")
+#
+#         for line_edit in [self.amplitude_from_input, self.amplitude_to_input]:
+#             amplitude_input_line_edit_layout.addWidget(line_edit)
+#
+#         amplitude_layout.addLayout(amplitude_input_line_edit_layout)
+#
+#        #combining both
+#         for layout in [range_layout, amplitude_layout]:
+#             range_amplitude_layout.addLayout(layout)
+#         reformat_btn=QPushButton("Reformat the axes")
+#         reformat_btn.clicked.connect(self.on_reformat_clicked)
+#         range_amplitude_layout.addWidget(reformat_btn)
+#         group.setLayout(range_amplitude_layout)
+#         group.setEnabled(False)
+#         parent_layout.addWidget(group)
+#         parent_layout.setEnabled(False)
 
-        range_input_line_edit_layout = QHBoxLayout()
-        self.range_from_input = QLineEdit()
-        self.range_from_input.setPlaceholderText("From")
-        self.range_to_input = QLineEdit()
-        self.range_to_input.setPlaceholderText("To")
-
-        for line_edit in [self.range_from_input, self.range_to_input]:
-            range_input_line_edit_layout.addWidget(line_edit)
-
-        range_layout.addLayout(range_input_line_edit_layout)
-#yaxis setting
-        amplitude_layout = QVBoxLayout()
-        amplitude_layout.addWidget(QLabel("Enter Desired Amplitude: -1 to 1"))
-
-        amplitude_input_line_edit_layout = QHBoxLayout()
-        self.amplitude_from_input = QLineEdit()
-        self.amplitude_from_input.setPlaceholderText("From")
-        self.amplitude_to_input = QLineEdit()
-        self.amplitude_to_input.setPlaceholderText("To")
-
-        for line_edit in [self.amplitude_from_input, self.amplitude_to_input]:
-            amplitude_input_line_edit_layout.addWidget(line_edit)
-
-        amplitude_layout.addLayout(amplitude_input_line_edit_layout)
-
-       #combining both
-        for layout in [range_layout, amplitude_layout]:
-            range_amplitude_layout.addLayout(layout)
-        reformat_btn=QPushButton("Reformat the axes")
-        reformat_btn.clicked.connect(self.on_reformat_clicked)
-        range_amplitude_layout.addWidget(reformat_btn)
-        group.setLayout(range_amplitude_layout)
-        parent_layout.addWidget(group)
 
     # def create_logging_controls(self, parent_layout):
     #     group = QGroupBox("Data Logging")
@@ -209,7 +212,6 @@ class GraphWidget(QWidget):
     #
     #     group.setLayout(layout)
     #     parent_layout.addWidget(group)
-
     def add_vertical_separator(self, layout):
         layout.addItem(QSpacerItem(1, 0, QSizePolicy.Fixed, QSizePolicy.Minimum))
 
