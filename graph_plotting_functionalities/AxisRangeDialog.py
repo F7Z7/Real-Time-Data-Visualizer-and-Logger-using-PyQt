@@ -56,15 +56,46 @@ class AxisRangeDialog(QDialog):
         button_layout = QHBoxLayout()
         self.apply_button = QPushButton("Apply")
         self.apply_button.setToolTip("Apply the desired Ranges")
-        self.apply_button.clicked.connect(on_apply_clicked)
+        self.apply_button.clicked.connect(self.on_apply_clicked)
         self.cancel_button = QPushButton("Cancel")
         self.cancel_button.setToolTip("Cancel this dialog")
-        self.apply_button.clicked.connect(on_cancel_clicked)
+        self.apply_button.clicked.connect(self.on_cancel_clicked)
         self.reset_button = QPushButton("Reset")
         self.reset_button.setToolTip("Reset to old values")
-        self.apply_button.clicked.connect(on_reset_clicked)
+        self.apply_button.clicked.connect(self.on_reset_clicked)
 
 
         for buttons in [self.apply_button, self.cancel_button, self.reset_button]:
             button_layout.addWidget(buttons)
 
+
+
+    def on_apply_clicked(self):
+        try:
+            x_min=float(self.input_x_min.text())
+            x_max=float(self.input_x_max.text())
+            y_min=float(self.input_y_min.text())
+            y_max=float(self.input_y_max.text())
+        except ValueError:
+            QMessageBox.warning(self, "Warning", "Please enter valid numeric values.")
+            return
+
+        if x_min>x_max and y_min>y_max:
+            QMessageBox.warning(self,"Warning","The minimum and maximum values are incompatible")
+            return
+
+        self._x_min = x_min
+        self._x_max = x_max
+        self._y_min = y_min
+        self._y_max = y_max
+
+        self.accept()  # Close dialog and return accepted status
+    def on_cancel_clicked(self):
+        self.reject()  # Proper way to signal cancellation
+
+    def on_reset_clicked(self):
+
+        self.input_x_min.clear()
+        self.input_x_max.clear()
+        self.input_y_min.clear()
+        self.input_y_max.clear()
