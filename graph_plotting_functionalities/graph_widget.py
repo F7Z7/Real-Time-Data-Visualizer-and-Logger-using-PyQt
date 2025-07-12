@@ -4,6 +4,7 @@ import os
 import random
 import struct
 
+import numpy as np
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QComboBox,
     QSizePolicy, QGroupBox, QSpacerItem, QLineEdit, QFileDialog, QMessageBox
@@ -239,8 +240,14 @@ class GraphWidget(QWidget):
             self.worker_thread.wait()
 
     def update_plot(self, t, y1, y2=None):
-        self.curve.setData(t, y1)
+        t = np.asarray(t).flatten()
+        y1 = np.asarray(y1).flatten()
 
+        if t.shape != y1.shape:
+            print(f"[ERROR] Shape mismatch: t.shape = {t.shape}, y1.shape = {y1.shape}")
+            return  # Or handle accordingly (e.g., pad/crop the shorter one)
+
+        self.curve.setData(t, y1)
     def start_plot(self):
         if not self.worker_thread.isRunning():
             self.worker_thread.started.connect(self.worker.start_work)
