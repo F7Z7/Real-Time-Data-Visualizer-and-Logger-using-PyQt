@@ -17,9 +17,9 @@ class DataWorker(QObject):
     @pyqtSlot()
     def start_work(self):
         self.running = True
-        self.t = 0
-        self.t_data = []
-        self.y_data = []
+        # self.t = 0
+        # self.t_data = []
+        # self.y_data = []
 
         while self.running:
             if not hasattr(self, 'data_ready'):

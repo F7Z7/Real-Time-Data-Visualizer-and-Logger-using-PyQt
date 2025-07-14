@@ -150,10 +150,21 @@ class MainWindow(QMainWindow):
         control_layout.addWidget(self.destination)
 
         # Start/Stop Logging
+        self.start_log_btn = QPushButton("Start Log")
+        self.stop_log_btn = QPushButton("Stop Log")
+
+        # Initially disable "Stop Log"
+        self.stop_log_btn.setEnabled(False)
+
+        # Connect signals
+        self.start_log_btn.clicked.connect(self.on_start_logging)
+        self.stop_log_btn.clicked.connect(self.on_stop_logging)
+
         log_btns = create_button_row([
-            ("Start Log", self.on_start_logging),
-            ("Stop Log", self.on_stop_logging)
+            ("Start Log", self.start_log_btn.click),
+            ("Stop Log", self.stop_log_btn.click)
         ])
+
         control_layout.addLayout(log_btns)
 
         # Signal visibility
@@ -186,6 +197,8 @@ class MainWindow(QMainWindow):
         self.generate_graph_widget.stop_all()
 
     def on_start_logging(self):
+        self.stop_log_btn.setEnabled(True)
+        self.start_log_btn.setEnabled(False)
         destination = self.destination.text()
         log_format = self.logger_combo_box.currentText()
         size = self.size_combo.currentText()
@@ -211,6 +224,8 @@ class MainWindow(QMainWindow):
         self.generate_graph_widget.start_logging_all(log_format, destination, max_size,create_new_file)
 
     def on_stop_logging(self):
+        self.start_log_btn.setEnabled(True)
+        self.stop_log_btn.setEnabled(False)
         self.generate_graph_widget.stop_logging_all()
 
     def reset_plot(self):
@@ -277,7 +292,13 @@ class MainWindow(QMainWindow):
         return super().eventFilter(obj, event)
 
     def select_folder(self):
+        #stop the plot
+        self.generate_graph_widget.stop_all()
+
         folder = QFileDialog.getExistingDirectory()
+
+        #resume after selction
+        self.generate_graph_widget.start_all()
         if folder:
             self.destination.setText(folder)
             self.destination.setToolTip(f"Selected: {folder}")
