@@ -15,7 +15,6 @@ def math_dialogue_box(parent):
     user_input1.addItem("Select a Signal")
     user_input2.addItem("Select a Signal")
 
-    # Populate with available signals
     for graph in parent.generate_graph_widget.graphs:
         signal_name = graph.signal_name
         user_input1.addItem(signal_name)
@@ -25,7 +24,6 @@ def math_dialogue_box(parent):
         layout.addWidget(QLabel(label))
         layout.addWidget(combo)
 
-    # === Operation Selection ===
     operations = QComboBox()
     operations.addItems([
         "Choose an operation", "A + B", "A - B", "A * B", "A / B",
@@ -34,19 +32,17 @@ def math_dialogue_box(parent):
     layout.addWidget(QLabel("Math Operation Selection"))
     layout.addWidget(operations)
 
-    # === Constant Input ===
     constant_input = QLineEdit()
     constant_input.setPlaceholderText("Optional constant (e.g., 2, 1.5)")
     layout.addWidget(QLabel("Optional Constants"))
     layout.addWidget(constant_input)
 
-    # === Preview Button & Output ===
     preview_btn = QPushButton("Preview the Expression")
     preview_input = QLineEdit()
     preview_input.setEnabled(False)
 
     def on_preview_clicked():
-        # Example: Just show selected operation
+
         op = operations.currentText()
         preview_input.setText(op)
 
@@ -56,7 +52,6 @@ def math_dialogue_box(parent):
     layout.addWidget(QLabel("Preview"))
     layout.addWidget(preview_input)
 
-    # === Calculate Button ===
     calculate_btn = QPushButton("Calculate and Plot")
     layout.addWidget(calculate_btn)
 
