@@ -198,46 +198,46 @@ class MainWindow(QMainWindow):
         for graph in self.generate_graph_widget.graphs:
             graph.auto_scale()
 
-    def get_user_input(self):
-        userinput1 = self.user_input1.currentText()
-        userinput2 = self.user_input2.currentText()
-        operation = self.operations.currentText()
-        constants = self.constant_input.text().strip()
-
-        if userinput1 == "Select a Signal" or userinput2 == "Select a Signal":
-            QMessageBox.critical(self, "Error", "Please select a signal")
-            return None, None, None, None
-
-        return userinput1, userinput2, operation, constants
-
-    def on_preview_clicked(self):
-        user_input1, user_input2, operation, constants = self.get_user_input()
-        if not user_input1:
-            return
-
-        if operation in ["A + B", "A - B", "A * B", "A / B"]:
-            preview = f"{user_input1} {operation[2]} {user_input2}"
-        else:
-            preview = operation.replace("A", user_input1).replace("B", user_input2)
-
-        if constants:
-            preview += f" | Constants: {constants}"
-
-        self.preview_input.setText(preview)
-
-    def on_calculate_plot(self):
-        self.on_click_start()
-        time_array = np.linspace(0, 1, self.max_points)
-        user_input1, user_input2, operation, constants = self.get_user_input()
-        if not user_input1:
-            return
-
-        result = compute_expression(time_array, user_input1, user_input2, operation, constants)
-        if result:
-            self.t_computed, self.y_computed = result
-            for graph in self.generate_graph_widget.graphs:
-                if hasattr(graph, 'graph_template'):
-                    graph.graph_template.plot.plot(self.t_computed, self.y_computed, pen=pg.mkPen('r', width=2))
+    # def get_user_input(self):
+    #     userinput1 = self.user_input1.currentText()
+    #     userinput2 = self.user_input2.currentText()
+    #     operation = self.operations.currentText()
+    #     constants = self.constant_input.text().strip()
+    #
+    #     if userinput1 == "Select a Signal" or userinput2 == "Select a Signal":
+    #         QMessageBox.critical(self, "Error", "Please select a signal")
+    #         return None, None, None, None
+    #
+    #     return userinput1, userinput2, operation, constants
+    #
+    # def on_preview_clicked(self):
+    #     user_input1, user_input2, operation, constants = self.get_user_input()
+    #     if not user_input1:
+    #         return
+    #
+    #     if operation in ["A + B", "A - B", "A * B", "A / B"]:
+    #         preview = f"{user_input1} {operation[2]} {user_input2}"
+    #     else:
+    #         preview = operation.replace("A", user_input1).replace("B", user_input2)
+    #
+    #     if constants:
+    #         preview += f" | Constants: {constants}"
+    #
+    #     self.preview_input.setText(preview)
+    #
+    # def on_calculate_plot(self):
+    #     self.on_click_start()
+    #     time_array = np.linspace(0, 1, self.max_points)
+    #     user_input1, user_input2, operation, constants = self.get_user_input()
+    #     if not user_input1:
+    #         return
+    #
+    #     result = compute_expression(time_array, user_input1, user_input2, operation, constants)
+    #     if result:
+    #         self.t_computed, self.y_computed = result
+    #         for graph in self.generate_graph_widget.graphs:
+    #             if hasattr(graph, 'graph_template'):
+    #                 graph.graph_template.plot.plot(self.t_computed, self.y_computed, pen=pg.mkPen('r', width=2))
 
     def update_plot(self, t, y1, y2):
         pass  # handled inside individual GraphWidgets
