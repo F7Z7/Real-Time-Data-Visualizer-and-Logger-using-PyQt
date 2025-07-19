@@ -61,13 +61,10 @@ class MainWindow(QMainWindow):
         user_input_layout = QVBoxLayout()
         self.user_input1 = QComboBox()
         self.user_input2 = QComboBox()
-        signals = [
-            "Select a Signal",
-            "Sin", "Cos", "Tan", "Cosec",
-            "Sec", "Cot", "Triangle", "Square"
-        ]
-        self.user_input1.addItems(signals)
-        self.user_input2.addItems(signals)
+        self.user_input1.addItem("Select a Signal")
+        self.user_input2.addItem("Select a Signal")
+
+
 
         for label, box in [("Signal A", self.user_input1), ("Signal B", self.user_input2)]:
             user_input_layout.addWidget(QLabel(label))
@@ -312,3 +309,21 @@ class MainWindow(QMainWindow):
         zoom_mode = self.zoom_combo_box.currentText()
         for graph in self.generate_graph_widget.graphs:
             graph.zoom_out_all(zoom_mode)
+
+
+
+    #this is for adding  the current signals to the combobox
+    def add_dynamic_signals(self):
+        self.user_input1.clear()
+        self.user_input2.clear()
+
+        self.user_input1.addItem("Select a Signal")
+        self.user_input2.addItem("Select a Signal")
+
+        signal_names=[]
+        for graph in self.generate_graph_widget.graphs:
+            signal_names.append(graph.name)
+
+        for name in sorted(set(signal_names)):
+            self.user_input1.addItem(name)
+            self.user_input2.addItem(name)
