@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QThread, QEvent
 import numpy as np
 import pyqtgraph as pg
-
+from src.Math_Dialog import math_dialogue_box
 from src.data_worker import DataWorker
 from src.math_functions import compute_expression
 from graph_plotting_functionalities.Graph_Layout import Generate_Graph
@@ -58,6 +58,12 @@ class MainWindow(QMainWindow):
         control_layout.setContentsMargins(5, 5, 5, 5)
         control_layout.setAlignment(Qt.AlignTop)
 
+#math operation dialogue box entry
+        self.math_controls=QPushButton("Signal Operations")
+        self.math_controls.setToolTip("Click to do signal manipulations")
+        self.math_controls.clicked.connect(math_dialogue_box)
+
+        control_layout.addWidget(self.math_controls)
 
 
         # Global Buttons
