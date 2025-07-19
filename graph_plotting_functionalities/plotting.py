@@ -57,13 +57,12 @@ def square_graph(t):
 
 
 Signal_list = {
-    "random_mixed": random_mixed_signal,
-    "sine": sine_graph,
-    "cos": cos_graph,
-    "tan": tan_graph,
-    "cosec": cosec_graph,
-    "sec": sec_graph,
-    "cot": cot_graph,
-    "triangle": triangle_graph,
-    "square": square_graph
+    "Sin": random_mixed_signal,
+    "Cos": random_mixed_signal,
+    "Tan": random_mixed_signal,
+    "Cosec": random_mixed_signal,
+    "Sec": random_mixed_signal,
+    "Cot": random_mixed_signal,
+    "Triangle": random_mixed_signal,
+    "Square": random_mixed_signal
 }
