@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
 def math_dialogue_box(parent):
     dialog = QDialog(parent)
     dialog.setWindowTitle("Signal Math Operations")
+    dialog.setGeometry(300,300,300,300)
 
     layout = QVBoxLayout()
 
