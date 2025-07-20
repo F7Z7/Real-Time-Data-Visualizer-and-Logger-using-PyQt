@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from graph_plotting_functionalities.graph_widget import GraphWidget
 from graph_plotting_functionalities.plotting import Signal_list
-
+import numpy as np
 
 class Generate_Graph(QWidget):
     def __init__(self):
@@ -97,3 +97,37 @@ class Generate_Graph(QWidget):
     def stop_logging_all(self):
         for graph in self.graphs:
             graph.stop_logging()
+
+    def get_signal_data_by_name(self,name):
+        for graph in self.graphs:
+            if graph.signal_name == name:
+                return graph.y_data
+    def add_math_signal(self, input1, input2, operation, constant, expression):
+        signal_data_1 = self.get_signal_data_by_name(input1)
+        signal_data_2 = self.get_signal_data_by_name(input2)
+
+        # You can now apply the operation:
+        try:
+            if operation == "A + B":
+                result = signal_data_1 + signal_data_2
+            elif operation == "A - B":
+                result = signal_data_1 - signal_data_2
+            elif operation == "A * B":
+                result = signal_data_1 * signal_data_2
+            elif operation == "A / B":
+                result = signal_data_1 / signal_data_2
+            elif operation == "sin(A)":
+                result = np.sin(signal_data_1)
+            elif operation == "cos(B)":
+                result = np.cos(signal_data_2)
+            elif operation == "sin(A) + 2*B":
+                result = np.sin(signal_data_1) + 2 * signal_data_2
+            else:
+                print("Unsupported operation:", operation)
+                return
+        except Exception as e:
+            print("Error during math computation:", e)
+            return
+
+        # Create new signal/graph
+        self.add_graph_from_array(result, name=expression)
