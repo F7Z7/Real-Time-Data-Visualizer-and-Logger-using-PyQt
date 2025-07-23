@@ -1,82 +1,108 @@
-# Math_Dialog.py
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QComboBox, QLineEdit, QPushButton, QMessageBox
+    QDialog, QVBoxLayout, QLabel, QComboBox, QLineEdit,
+    QPushButton, QMessageBox
 )
 
-def math_dialogue_box(parent):
-    dialog = QDialog(parent)
-    dialog.setWindowTitle("Signal Math Operations")
-    dialog.setGeometry(300, 300, 300, 300)
 
-    layout = QVBoxLayout()
+class MathDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.parent = parent
+        self.setWindowTitle("Signal Math Operations")
+        self.setGeometry(300, 300, 300, 300)
+        self.result = None
+        self._init_ui()
 
-    user_input1 = QComboBox()
-    user_input2 = QComboBox()
-    user_input1.addItem("Select a Signal")
-    user_input2.addItem("Select a Signal")
+    def _init_ui(self):
+        layout = QVBoxLayout()
 
-    for graph in parent.generate_graph_widget.graphs:
-        signal_name = graph.signal_name
-        user_input1.addItem(signal_name)
-        user_input2.addItem(signal_name)
+        # Input signal dropdowns
+        self.user_input1 = QComboBox()
+        self.user_input2 = QComboBox()
+        self.user_input1.addItem("Select a Signal")
+        self.user_input2.addItem("Select a Signal")
 
-    for label, combo in [("Signal A", user_input1), ("Signal B", user_input2)]:
-        layout.addWidget(QLabel(label))
-        layout.addWidget(combo)
+        for graph in self.parent.generate_graph_widget.graphs:
+            signal_name = graph.signal_name
+            self.user_input1.addItem(signal_name)
+            self.user_input2.addItem(signal_name)
 
-    operations = QComboBox()
-    operations.addItems([
-        "Choose an operation", "A + B", "A - B", "A * B", "A / B",
-        "sin(A)", "cos(B)", "sin(A) + 2*B"
-    ])
-    layout.addWidget(QLabel("Math Operation Selection"))
-    layout.addWidget(operations)
+        for label, combo in [("Signal A", self.user_input1), ("Signal B", self.user_input2)]:
+            layout.addWidget(QLabel(label))
+            layout.addWidget(combo)
 
-    constant_input = QLineEdit()
-    constant_input.setPlaceholderText("Optional constant (e.g., 2, 1.5)")
-    layout.addWidget(QLabel("Optional Constants"))
-    layout.addWidget(constant_input)
+        # Operation selection
+        self.operations = QComboBox()
+        self.operations.addItems([
+            "Choose an operation", "A + B", "A - B", "A * B", "A / B",
+            "sin(A)", "cos(B)", "sin(A) + 2*B"
+        ])
+        layout.addWidget(QLabel("Math Operation Selection"))
+        layout.addWidget(self.operations)
 
-    preview_btn = QPushButton("Preview the Expression")
-    preview_input = QLineEdit()
-    preview_input.setEnabled(False)
+        # Optional constant
+        self.constant_input = QLineEdit()
+        self.constant_input.setPlaceholderText("Optional constant (e.g., 2, 1.5)")
+        layout.addWidget(QLabel("Optional Constants"))
+        layout.addWidget(self.constant_input)
 
-    def get_user_input():
-        userinput1 = user_input1.currentText()
-        userinput2 = user_input2.currentText()
-        operation = operations.currentText()
-        constants = constant_input.text().strip()
+        # Preview
+        self.preview_input = QLineEdit()
+        self.preview_input.setEnabled(False)
+
+        preview_btn = QPushButton("Preview the Expression")
+        preview_btn.clicked.connect(self.on_preview_clicked)
+        layout.addWidget(preview_btn)
+        layout.addWidget(QLabel("Preview"))
+        layout.addWidget(self.preview_input)
+
+        # Calculate button
+        calculate_btn = QPushButton("Calculate and Plot")
+        calculate_btn.clicked.connect(self.on_calculate_clicked)
+        layout.addWidget(calculate_btn)
+
+        self.setLayout(layout)
+
+    def get_user_input(self):
+        input1 = self.user_input1.currentText()
+        input2 = self.user_input2.currentText()
+        operation = self.operations.currentText()
+        constant = self.constant_input.text().strip()
 
         if operation == "Choose an operation":
-            QMessageBox.critical(parent, "Error", "Please choose a math operation")
-            return None, None, None, None
+            QMessageBox.critical(self, "Error", "Please choose a math operation")
+            return None
 
-        if ("A" in operation and userinput1 == "Select a Signal") or \
-           ("B" in operation and userinput2 == "Select a Signal"):
-            QMessageBox.critical(dialog, "Error", "Please select required signal(s)")
-            return None, None, None, None
+        if ("A" in operation and input1 == "Select a Signal") or \
+           ("B" in operation and input2 == "Select a Signal"):
+            QMessageBox.critical(self, "Error", "Please select required signal(s)")
+            return None
 
-        return userinput1, userinput2, operation, constants
+        return input1, input2, operation, constant
 
-    def on_preview_clicked():
-        input1, input2, operation, constant = get_user_input()
-        if not input1:
+    def on_preview_clicked(self):
+        values = self.get_user_input()
+        if not values:
             return
+
+        input1, input2, operation, constant = values
         if operation in ["A + B", "A - B", "A * B", "A / B"]:
             symbol = operation[2]
-            preview = f"{input1} {symbol} {input2}"
+            expression = f"{input1} {symbol} {input2}"
         else:
-            preview = operation.replace("A", input1).replace("B", input2)
+            expression = operation.replace("A", input1).replace("B", input2)
 
         if constant:
-            preview += f" | Constant: {constant}"
+            expression += f" | Constant: {constant}"
 
-        preview_input.setText(preview)
-    result={}
-    def on_calculate_clicked():
-        input1, input2, operation, constant = get_user_input()
-        if not input1:
+        self.preview_input.setText(expression)
+
+    def on_calculate_clicked(self):
+        values = self.get_user_input()
+        if not values:
             return
+
+        input1, input2, operation, constant = values
         if operation in ["A + B", "A - B", "A * B", "A / B"]:
             symbol = operation[2]
             expression = f"{input1} {symbol} {input2}"
@@ -86,24 +112,15 @@ def math_dialogue_box(parent):
         if constant:
             expression += f" | Const={constant}"
 
-        result["input1"] = input1
-        result["input2"] = input2
-        result["operation"] = operation
-        result["constant"] = constant
-        result["expression"] = expression
+        self.result = {
+            "input1": input1,
+            "input2": input2,
+            "operation": operation,
+            "constant": constant,
+            "expression": expression
+        }
+        print("Result:", self.result)
+        self.accept()
 
-        print(f"Compute: {input1}, {input2}, {operation}, Constant={constant}")
-        dialog.accept()
-
-    preview_btn.clicked.connect(on_preview_clicked)
-
-    layout.addWidget(preview_btn)
-    layout.addWidget(QLabel("Preview"))
-    layout.addWidget(preview_input)
-
-    calculate_btn = QPushButton("Calculate and Plot")
-    calculate_btn.clicked.connect(on_calculate_clicked)
-    layout.addWidget(calculate_btn)
-
-    dialog.setLayout(layout)
-    dialog.exec_()
+    def get_result(self):
+        return self.result
