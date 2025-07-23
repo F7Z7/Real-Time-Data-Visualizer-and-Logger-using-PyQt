@@ -98,15 +98,33 @@ class Generate_Graph(QWidget):
         for graph in self.graphs:
             graph.stop_logging()
 
-    def get_signal_data_by_name(self,name):
+    def get_signal_data_by_name(self, name):
         for graph in self.graphs:
             if graph.signal_name == name:
-                return graph.y_data
+                if graph.curve is not None:
+                    x_data, y_data = graph.curve.getData()
+                    return x_data, y_data
+                else:
+                    print("Warning: No curve data available for", name)
+                    return None, None
+        print(f"Warning: Signal '{name}' not found in existing graphs.")
+        return None, None
+
     def add_math_signal(self, input1, input2, operation, constant, expression):
         signal_data_1 = self.get_signal_data_by_name(input1)
         signal_data_2 = self.get_signal_data_by_name(input2)
 
-        # You can now apply the operation:
+        if signal_data_1 is None or signal_data_2 is None:
+            print("Error: One or both signals not found.")
+            return
+
+        x1, y1 = signal_data_1
+        x2, y2 = signal_data_2
+
+        if len(y1) != len(y2):
+            print("Error: Signal lengths do not match.")
+            return
+
         try:
             if operation == "A + B":
                 result = signal_data_1 + signal_data_2
