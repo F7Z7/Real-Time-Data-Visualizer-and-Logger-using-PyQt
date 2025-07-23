@@ -2,7 +2,6 @@
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QComboBox, QLineEdit, QPushButton, QMessageBox
 )
-
 def math_dialogue_box(parent):
     dialog = QDialog(parent)
     dialog.setWindowTitle("Signal Math Operations")

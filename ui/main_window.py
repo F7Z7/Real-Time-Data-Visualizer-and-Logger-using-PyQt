@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
 #math operation dialogue box entry
         self.math_controls=QPushButton("Signal Operations")
         self.math_controls.setToolTip("Click to do signal manipulations")
-        self.math_controls.clicked.connect(self.open_math_dialog)
+        self.math_controls.clicked.connect(lambda: math_dialogue_box(parent=self))
 
         control_layout.addWidget(self.math_controls)
 
