@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
 #math operation dialogue box entry
         self.math_controls=QPushButton("Signal Operations")
         self.math_controls.setToolTip("Click to do signal manipulations")
-        self.math_controls.clicked.connect(lambda: math_dialogue_box(parent=self))
+        self.math_controls.clicked.connect(self.open_math_dialog)
 
         control_layout.addWidget(self.math_controls)
 
@@ -293,3 +293,14 @@ class MainWindow(QMainWindow):
         for name in sorted(set(signal_names)):
             self.user_input1.addItem(name)
             self.user_input2.addItem(name)
+
+    def open_math_dialog(self):
+        result=math_dialogue_box(self)
+        if result:
+            self.generate_graph_widget.add_math_signal(
+                input1=result["input1"],
+                input2=result["input2"],
+                operation=result["operation"],
+                constant=result["constant"],
+                expression=result["expression"]
+            )
