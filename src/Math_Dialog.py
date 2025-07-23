@@ -2,14 +2,14 @@
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QComboBox, QLineEdit, QPushButton, QMessageBox
 )
+
 def math_dialogue_box(parent):
     dialog = QDialog(parent)
     dialog.setWindowTitle("Signal Math Operations")
-    dialog.setGeometry(300,300,300,300)
+    dialog.setGeometry(300, 300, 300, 300)
 
     layout = QVBoxLayout()
 
-    # === Signal Selection ===
     user_input1 = QComboBox()
     user_input2 = QComboBox()
     user_input1.addItem("Select a Signal")
@@ -52,26 +52,48 @@ def math_dialogue_box(parent):
             return None, None, None, None
 
         if ("A" in operation and userinput1 == "Select a Signal") or \
-                ("B" in operation and userinput2 == "Select a Signal"):
+           ("B" in operation and userinput2 == "Select a Signal"):
             QMessageBox.critical(dialog, "Error", "Please select required signal(s)")
             return None, None, None, None
 
         return userinput1, userinput2, operation, constants
 
     def on_preview_clicked():
-        input1,input2,operation,constant=get_user_input()
+        input1, input2, operation, constant = get_user_input()
         if not input1:
-            return None
+            return
         if operation in ["A + B", "A - B", "A * B", "A / B"]:
             symbol = operation[2]
             preview = f"{input1} {symbol} {input2}"
         else:
-            preview = operation.replace("A", user_input1).replace("B", user_input2)
+            preview = operation.replace("A", input1).replace("B", input2)
 
         if constant:
             preview += f" | Constant: {constant}"
 
         preview_input.setText(preview)
+    result={}
+    def on_calculate_clicked():
+        input1, input2, operation, constant = get_user_input()
+        if not input1:
+            return
+        if operation in ["A + B", "A - B", "A * B", "A / B"]:
+            symbol = operation[2]
+            expression = f"{input1} {symbol} {input2}"
+        else:
+            expression = operation.replace("A", input1).replace("B", input2)
+
+        if constant:
+            expression += f" | Const={constant}"
+
+        result["input1"] = input1
+        result["input2"] = input2
+        result["operation"] = operation
+        result["constant"] = constant
+        result["expression"] = expression
+
+        print(f"Compute: {input1}, {input2}, {operation}, Constant={constant}")
+        dialog.accept()
 
     preview_btn.clicked.connect(on_preview_clicked)
 
@@ -80,6 +102,7 @@ def math_dialogue_box(parent):
     layout.addWidget(preview_input)
 
     calculate_btn = QPushButton("Calculate and Plot")
+    calculate_btn.clicked.connect(on_calculate_clicked)
     layout.addWidget(calculate_btn)
 
     dialog.setLayout(layout)
