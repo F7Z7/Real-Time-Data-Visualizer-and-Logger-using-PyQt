@@ -296,7 +296,8 @@ class MainWindow(QMainWindow):
 
     def open_math_dialog(self):
         result=math_dialogue_box(self)
-        if result:
+        print(result)
+        if result is not None:
             self.generate_graph_widget.add_math_signal(
                 input1=result["input1"],
                 input2=result["input2"],
@@ -304,3 +305,5 @@ class MainWindow(QMainWindow):
                 constant=result["constant"],
                 expression=result["expression"]
             )
+        else:
+            print("Dialog was cancelled or invalid input")
