@@ -1,12 +1,12 @@
 # === main_window.py ===
 from PyQt5.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QPushButton,
-    QHBoxLayout, QLabel, QComboBox, QLineEdit, QMessageBox, QFileDialog, QCheckBox
+    QHBoxLayout, QLabel, QComboBox, QLineEdit, QMessageBox, QFileDialog, QCheckBox, QDialog
 )
 from PyQt5.QtCore import Qt, QThread, QEvent
 import numpy as np
 import pyqtgraph as pg
-from src.Math_Dialog import math_dialogue_box
+from src.Math_Dialog import MathDialog
 from src.data_worker import DataWorker
 from src.math_functions import compute_expression
 from graph_plotting_functionalities.Graph_Layout import Generate_Graph
@@ -295,15 +295,15 @@ class MainWindow(QMainWindow):
             self.user_input2.addItem(name)
 
     def open_math_dialog(self):
-        result=math_dialogue_box(self)
-        print(result)
-        if result is not None:
-            self.generate_graph_widget.add_math_signal(
-                input1=result["input1"],
-                input2=result["input2"],
-                operation=result["operation"],
-                constant=result["constant"],
-                expression=result["expression"]
-            )
-        else:
-            print("Dialog was cancelled or invalid input")
+        dialog = MathDialog(self)
+        if dialog.exec_() == QDialog.Accepted:
+            result = dialog.get_result()
+            if result:
+                print("ivde vare ethitund")
+                self.generate_graph_widget.add_math_signal(
+                    input1=result["input1"],
+                    input2=result["input2"],
+                    operation=result["operation"],
+                    constant=result["constant"],
+                    expression=result["expression"]
+                )
