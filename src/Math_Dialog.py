@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import (
     QPushButton, QMessageBox
 )
 
+from graph_plotting_functionalities.Graph_Layout import Generate_Graph
+
 
 class MathDialog(QDialog):
     def __init__(self, parent=None):
