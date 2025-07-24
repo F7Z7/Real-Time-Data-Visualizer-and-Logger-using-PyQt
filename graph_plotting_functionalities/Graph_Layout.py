@@ -99,10 +99,14 @@ class Generate_Graph(QWidget):
             graph.stop_logging()
 
     def get_signal_data_by_name(self, name):
+        print(name)
         for graph in self.graphs:
             if graph.signal_name == name:
                 if graph.curve is not None:
+                    print(graph.curve)
                     x_data, y_data = graph.curve.getData()
+                    print("ehee")
+                    print(x_data, y_data)
                     return x_data, y_data
                 else:
                     print("Warning: No curve data available for", name)
@@ -111,41 +115,43 @@ class Generate_Graph(QWidget):
         return None, None
 
     def add_math_signal(self, input1, input2, operation, constant, expression):
+        print(input1, input2, operation, constant, expression)
         signal_data_1 = self.get_signal_data_by_name(input1)
         signal_data_2 = self.get_signal_data_by_name(input2)
 
         if signal_data_1 is None or signal_data_2 is None:
             print("Error: One or both signals not found.")
             return
-
+        print(f"Singals datas exists {signal_data_1} and {signal_data_2}")
         x1, y1 = signal_data_1
         x2, y2 = signal_data_2
-
+        if y1 is None or y2 is None:
+            print("Error: One or both signals not found.")
+            return
         if len(y1) != len(y2):
             print("Error: Signal lengths do not match.")
             return
 
         try:
             if operation == "A + B":
-                result = signal_data_1 + signal_data_2
+                result_y = y1 + y2
             elif operation == "A - B":
-                result = signal_data_1 - signal_data_2
+                result_y = y1 - y2
             elif operation == "A * B":
-                result = signal_data_1 * signal_data_2
+                result_y = y1 * y2
             elif operation == "A / B":
-                result = signal_data_1 / signal_data_2
+                result_y = y1 / y2
             elif operation == "sin(A)":
-                result = np.sin(signal_data_1)
+                result_y = np.sin(y1)
             elif operation == "cos(B)":
-                result = np.cos(signal_data_2)
+                result_y = np.cos(y2)
             elif operation == "sin(A) + 2*B":
-                result = np.sin(signal_data_1) + 2 * signal_data_2
+                result_y = np.sin(y1) + 2 * y2
             else:
                 print("Unsupported operation:", operation)
                 return
         except Exception as e:
             print("Error during math computation:", e)
             return
-
         # Create new signal/graph
-        self.add_graph_from_array(result, name=expression)
+        self.add_graph_from_array((x1, result_y), name=expression)
