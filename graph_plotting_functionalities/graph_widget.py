@@ -378,7 +378,6 @@ class GraphWidget(QWidget):
             x2 = x2[:min_length]
             y2 = y2[:min_length]
 
-            print(f"[INFO] Computing math expression for Graph {self.graph_id}: {self.math_operation}")
 
             # Compute the math expression
             result_y = self.compute_math_expression(y1, y2)

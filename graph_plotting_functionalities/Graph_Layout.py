@@ -102,7 +102,6 @@ class Generate_Graph(QWidget):
             if graph.signal_name == name:
                 if graph.curve is not None:
                     x_data, y_data = graph.curve.getData()
-                    print(x_data, y_data)
                     return x_data, y_data
                 else:
                     print("Warning: No curve data available for", name)
@@ -111,6 +110,7 @@ class Generate_Graph(QWidget):
         return None, None
 
     def add_math_plot(self, input1, input2, operation, constant, expression):
+
         """Create a new graph widget for math operation result"""
         try:
             # Create new math graph widget with unique ID
@@ -139,6 +139,7 @@ class Generate_Graph(QWidget):
 
             # Update the graph title and curve name
             math_graph.graph_template.plot.setTitle(f"Math Result: {expression}")
+            math_graph.graph_template.plot.addLegend(f"Math Result: {expression}")
 
             # Update the curve name in the legend
             if math_graph.curve:
