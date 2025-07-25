@@ -1,4 +1,5 @@
-import random
+# === Graph_Template.py ===
+
 import pyqtgraph as pg
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
