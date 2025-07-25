@@ -29,6 +29,7 @@ def create_button_row(pairs):
 
 class GraphWidget(QWidget):
     def __init__(self, graph_id, graph_manager,mode="operation", signal1="Sin", signal2="Cos", num=1):
+        print(f"GraphWidget init - graph_id: {graph_id}, mode: {mode}, signal1: {signal1}")
         super().__init__()
         self.file_size = None
         self.graph_id = graph_id
@@ -52,7 +53,7 @@ class GraphWidget(QWidget):
         self.dialog= AxisRangeDialog()
         self.graph_template.plot.scene().sigMouseClicked.connect(self.on_plot_clicked) #this for so that the diaolgue box appaers when the clicked on the plot
 #for opeartion tabs
-        self.is_Math=False
+        self.is_math=False
         self.math_input1 = None
         self.math_input2 = None
         self.math_operation = None
@@ -348,9 +349,67 @@ class GraphWidget(QWidget):
         self.math_operation = operation
         self.math_constant = constant
 
-    def compute_math_expression(self,y1,y2):
+    def math_plot(self):
+        """Enhanced math plot method with better error handling and data validation"""
+        try:
+            # Get signal data from the graph manager
+            x1, y1 = self.graph_manager.get_signal_data_by_name(self.math_input1)
+            x2, y2 = self.graph_manager.get_signal_data_by_name(self.math_input2)
+
+            # Check if we have valid data
+            if any(data is None for data in [x1, y1, x2, y2]):
+                print(f"[INFO] Waiting for input signals to be ready for math graph {self.graph_id}...")
+                # Retry after a short delay
+                QTimer.singleShot(100, self.math_plot)
+                return
+
+            # Ensure we have actual data points
+            if len(y1) == 0 or len(y2) == 0:
+                print(f"[INFO] Input signals have no data yet for math graph {self.graph_id}...")
+                QTimer.singleShot(100, self.math_plot)
+                return
+
+            # Handle length mismatch by taking the minimum length
+            min_length = min(len(y1), len(y2), len(x1), len(x2))
+            if min_length == 0:
+                print(f"[WARNING] No valid data points for math graph {self.graph_id}")
+                QTimer.singleShot(100, self.math_plot)
+                return
+
+            # Truncate to same length
+            x1 = x1[:min_length]
+            y1 = y1[:min_length]
+            x2 = x2[:min_length]
+            y2 = y2[:min_length]
+
+            print(f"[INFO] Computing math expression for Graph {self.graph_id}: {self.math_operation}")
+
+            # Compute the math expression
+            result_y = self.compute_math_expression(y1, y2)
+
+            if result_y is not None:
+                # Update the plot with computed result
+                self.update_plot(x1, result_y)
+
+                # Schedule next update for continuous plotting
+                QTimer.singleShot(50, self.math_plot)
+            else:
+                print(f"[ERROR] Math computation returned None for Graph {self.graph_id}")
+                QTimer.singleShot(100, self.math_plot)
+
+        except Exception as e:
+            print(f"[ERROR] Math computation failed for Graph {self.graph_id}: {e}")
+            # Retry after error
+            QTimer.singleShot(200, self.math_plot)
+
+    def compute_math_expression(self, y1, y2):
+
         operation = self.math_operation
         try:
+            # Convert to numpy arrays for better computation
+            y1 = np.asarray(y1)
+            y2 = np.asarray(y2)
+
             if operation == "A + B":
                 result_y = y1 + y2
             elif operation == "A - B":
@@ -358,7 +417,10 @@ class GraphWidget(QWidget):
             elif operation == "A * B":
                 result_y = y1 * y2
             elif operation == "A / B":
-                result_y = y1 / y2
+                # Handle division by zero
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    result_y = np.divide(y1, y2)
+                    result_y[~np.isfinite(result_y)] = 0  # Replace inf/nan with 0
             elif operation == "sin(A)":
                 result_y = np.sin(y1)
             elif operation == "cos(B)":
@@ -366,33 +428,19 @@ class GraphWidget(QWidget):
             elif operation == "sin(A) + 2*B":
                 result_y = np.sin(y1) + 2 * y2
             else:
-                print("Unsupported operation:", operation)
-                return
+                print(f"Unsupported operation: {operation}")
+                return None
+
+            # Apply constant if provided
+            if self.math_constant and self.math_constant.strip():
+                try:
+                    constant_val = float(self.math_constant)
+                    result_y = result_y * constant_val
+                except ValueError:
+                    print(f"Invalid constant value: {self.math_constant}")
+
+            return result_y
+
         except Exception as e:
-            print("Error during math computation:", e)
-            return
-
-    def math_plot(self):
-        try:
-            x1, y1 = self.graph_manager.get_signal_data_by_name(self.math_input1)
-            x2, y2 = self.graph_manager.get_signal_data_by_name(self.math_input2)
-        except Exception:
-            x1 = y1 = x2 = y2 = None
-
-        if None in (x1, y1, x2, y2):
-            print(f"[INFO] Waiting for input signals to be ready for math graph {self.graph_id}...")
-            QTimer.singleShot(500, self.math_plot)
-            return
-
-        if len(y1) != len(y2):
-            print(f"[ERROR] Signal lengths do not match for Graph {self.graph_id}")
-            return
-
-        try:
-            result_y = self.compute_math_expression(y1, y2)
-            self.update_plot(x1, result_y)
-        except Exception as e:
-            print(f"[ERROR] Math computation failed for Graph {self.graph_id}: {e}")
-
-        # Create new signal/graph
-
+            print(f"Error during math computation: {e}")
+            return None

@@ -300,7 +300,7 @@ class MainWindow(QMainWindow):
             result = dialog.get_result()
             if result:
                 print("ivde vare ethitund")
-                self.generate_graph_widget.math_plot(
+                self.generate_graph_widget.add_math_plot(
                     input1=result["input1"],
                     input2=result["input2"],
                     operation=result["operation"],

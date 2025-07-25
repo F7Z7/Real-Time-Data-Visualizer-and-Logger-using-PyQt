@@ -20,7 +20,6 @@ class Generate_Graph(QWidget):
         self.dynamic_graphs_layout = QVBoxLayout(self.scroll_content)
         self.dynamic_graphs_layout.setSpacing(0)
         self.scroll_area.setWidget(self.scroll_content)
-        self.graph_widget = GraphWidget()
         self.initUI()
 
     def initUI(self):
@@ -115,7 +114,59 @@ class Generate_Graph(QWidget):
         return None, None
 
     def add_math_plot(self, input1, input2, operation, constant, expression):
-        self.graph_widget.math_plot()
+        """Create a new graph widget for math operation result"""
+        try:
+            # Create new math graph widget with unique ID
+            new_graph_id = len(self.graphs) + 1
+
+            # Use a valid signal name from Signal_list for initialization
+            signal_names = list(Signal_list.keys())
+            initial_signal = signal_names[0] if signal_names else "Sin"
+
+            print(f"Creating math graph with ID: {new_graph_id}")
+            print(f"Input signals: {input1}, {input2}")
+            print(f"Operation: {operation}")
+
+            math_graph = GraphWidget(
+                graph_id=new_graph_id,
+                graph_manager=self,
+                mode="math",  # Set mode to math
+                signal1=initial_signal,  # Use valid signal name initially
+                num=len(self.graphs) + 1
+            )
+
+            # Configure it as math expression
+            math_graph.set_as_math_expression(input1, input2, operation, constant)
+
+            # Update the signal name to reflect the expression
+            math_graph.signal_name = expression
+
+            # Update the graph title and curve name
+            math_graph.graph_template.plot.setTitle(f"Math Result: {expression}")
+
+            # Update the curve name in the legend
+            if math_graph.curve:
+                math_graph.curve.opts['name'] = expression
+
+            # Add to graphs list and layout
+            self.graphs.append(math_graph)
+            self.dynamic_graphs_layout.addWidget(math_graph)
+
+            print(f"Math plot added successfully: {expression}")
+
+            # Start the math plot after a small delay to ensure everything is set up
+            QTimer.singleShot(100, math_graph.start_plot)
+
+        except Exception as e:
+            import traceback
+            print(f"Error adding math plot: {e}")
+            print(f"Traceback: {traceback.format_exc()}")
+            QMessageBox.critical(None, "Error", f"Failed to add math plot: {str(e)}")
+            print(f"Math plot added successfully: {expression}")
+
+        except Exception as e:
+            print(f"Error adding math plot: {e}")
+            QMessageBox.critical(None, "Error", f"Failed to add math plot: {str(e)}")
 
 
 
