@@ -98,13 +98,10 @@ class Generate_Graph(QWidget):
             graph.stop_logging()
 
     def get_signal_data_by_name(self, name):
-        print(name)
         for graph in self.graphs:
             if graph.signal_name == name:
                 if graph.curve is not None:
-                    print(graph.curve)
                     x_data, y_data = graph.curve.getData()
-                    print("ehee")
                     print(x_data, y_data)
                     return x_data, y_data
                 else:
@@ -124,8 +121,7 @@ class Generate_Graph(QWidget):
             initial_signal = signal_names[0] if signal_names else "Sin"
 
             print(f"Creating math graph with ID: {new_graph_id}")
-            print(f"Input signals: {input1}, {input2}")
-            print(f"Operation: {operation}")
+
 
             math_graph = GraphWidget(
                 graph_id=new_graph_id,
@@ -152,7 +148,6 @@ class Generate_Graph(QWidget):
             self.graphs.append(math_graph)
             self.dynamic_graphs_layout.addWidget(math_graph)
 
-            print(f"Math plot added successfully: {expression}")
 
             # Start the math plot after a small delay to ensure everything is set up
             QTimer.singleShot(100, math_graph.start_plot)
@@ -162,7 +157,6 @@ class Generate_Graph(QWidget):
             print(f"Error adding math plot: {e}")
             print(f"Traceback: {traceback.format_exc()}")
             QMessageBox.critical(None, "Error", f"Failed to add math plot: {str(e)}")
-            print(f"Math plot added successfully: {expression}")
 
         except Exception as e:
             print(f"Error adding math plot: {e}")

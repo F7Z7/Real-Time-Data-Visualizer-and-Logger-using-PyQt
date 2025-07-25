@@ -29,7 +29,6 @@ def create_button_row(pairs):
 
 class GraphWidget(QWidget):
     def __init__(self, graph_id, graph_manager,mode="operation", signal1="Sin", signal2="Cos", num=1):
-        print(f"GraphWidget init - graph_id: {graph_id}, mode: {mode}, signal1: {signal1}")
         super().__init__()
         self.file_size = None
         self.graph_id = graph_id
@@ -331,13 +330,11 @@ class GraphWidget(QWidget):
         print(f"Log saved in {self.folder} as {self.log_format}")
     def on_plot_clicked(self,event):
         if event.button() == Qt.RightButton:
-            print("right click detected")
             self.on_reformat_clicked()
     def on_reformat_clicked(self):
         view_range=self.graph_template.plot.viewRange()
         self.dialog.set_fields(view_range)
         if self.dialog.exec_()==self.dialog.Accepted:
-            print("function didn reach here")
             x_min, x_max, y_min, y_max = self.dialog.get_ranges()
             self.graph_template.plot.setXRange(x_min, x_max)
             self.graph_template.plot.setYRange(y_min, y_max)
@@ -358,7 +355,6 @@ class GraphWidget(QWidget):
 
             # Check if we have valid data
             if any(data is None for data in [x1, y1, x2, y2]):
-                print(f"[INFO] Waiting for input signals to be ready for math graph {self.graph_id}...")
                 # Retry after a short delay
                 QTimer.singleShot(100, self.math_plot)
                 return
