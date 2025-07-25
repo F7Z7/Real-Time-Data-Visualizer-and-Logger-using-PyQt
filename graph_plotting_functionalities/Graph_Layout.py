@@ -20,7 +20,7 @@ class Generate_Graph(QWidget):
         self.dynamic_graphs_layout = QVBoxLayout(self.scroll_content)
         self.dynamic_graphs_layout.setSpacing(0)
         self.scroll_area.setWidget(self.scroll_content)
-
+        self.graph_widget = GraphWidget()
         self.initUI()
 
     def initUI(self):
@@ -113,4 +113,9 @@ class Generate_Graph(QWidget):
                     return None, None
         print(f"Warning: Signal '{name}' not found in existing graphs.")
         return None, None
+
+    def add_math_plot(self, input1, input2, operation, constant, expression):
+        self.graph_widget.math_plot()
+
+
 
