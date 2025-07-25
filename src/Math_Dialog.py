@@ -59,7 +59,7 @@ class MathDialog(QDialog):
         layout.addWidget(self.preview_input)
 
         # Calculate button
-        calculate_btn = QPushButton("Calculate and Plot")
+        calculate_btn = QPushButton("Set")
         calculate_btn.clicked.connect(self.on_calculate_clicked)
         layout.addWidget(calculate_btn)
 
