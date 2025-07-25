@@ -145,6 +145,11 @@ class Generate_Graph(QWidget):
             if math_graph.curve:
                 math_graph.curve.opts['name'] = expression
 
+                legend = math_graph.graph_template.plot.plotItem.legend
+                if legend:
+                    legend.removeItem(math_graph.curve)  # Remove old entry if exists
+                    legend.addItem(math_graph.curve, expression)  # Add with new name
+
             # Add to graphs list and layout
             self.graphs.append(math_graph)
             self.dynamic_graphs_layout.addWidget(math_graph)
