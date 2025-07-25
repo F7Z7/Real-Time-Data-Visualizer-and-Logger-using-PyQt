@@ -256,7 +256,7 @@ class GraphWidget(QWidget):
 
         self.curve.setData(t, y1)
     def start_plot(self):
-        if self.is_Math:
+        if self.is_math:
             self.math_plot()
         else:
             if not self.worker_thread.isRunning():
