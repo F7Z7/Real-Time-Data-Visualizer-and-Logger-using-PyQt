@@ -20,6 +20,7 @@ class Generate_Graph(QWidget):
         self.dynamic_graphs_layout = QVBoxLayout(self.scroll_content)
         self.dynamic_graphs_layout.setSpacing(0)
         self.scroll_area.setWidget(self.scroll_content)
+        self.graphs_updated=None
         self.initUI()
 
     def initUI(self):
@@ -70,6 +71,8 @@ class Generate_Graph(QWidget):
                 self.graphs.append(graph_widget)
                 self.dynamic_graphs_layout.addWidget(graph_widget)
 
+            if self.graphs_updated:
+                self.graphs_updated()
         except ValueError:
             QMessageBox.critical(self, "Error", "Invalid Value")
 

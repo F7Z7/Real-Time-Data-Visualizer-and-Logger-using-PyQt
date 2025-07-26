@@ -43,6 +43,7 @@ class MainWindow(QMainWindow):
 
         #first this is intialised
         self.generate_graph_widget = Generate_Graph()
+        self.generate_graph_widget.graphs_updated=self.update_visibility_checkboxes
 
         self.control_panel = self.setup_controls()
         main_layout.addWidget(self.control_panel)
@@ -139,11 +140,15 @@ class MainWindow(QMainWindow):
         self.master_checkbox = QCheckBox("Show All Graphs")
         self.master_checkbox.setChecked(True)
         self.master_checkbox.stateChanged.connect(self.toggle_all_graphs)
+        self.master_checkbox.setToolTip("For Master Visibility Control")
         self.visibility_layout.addWidget(self.master_checkbox)
+#will be added dynamically
+        print("heree1")
+        self.check_box_layout = QVBoxLayout()
+        self.visibility_layout.addLayout(self.check_box_layout)
 
         control_layout.addLayout(self.visibility_layout)
-        if hasattr(self.generate_graph_widget, "graphs") and self.generate_graph_widget.graphs:
-            self.update_visibility_layout()
+
 
         container = QWidget()
         container.setLayout(control_layout)
@@ -310,23 +315,32 @@ class MainWindow(QMainWindow):
                     constant=result["constant"],
                     expression=result["expression"]
                 )
-    def update_visibility_layout(self):
-        for i in reversed(range(self.visibility_layout.count())):
-            widget = self.visibility_layout.itemAt(i).widget()
+
+    def update_visibility_checkboxes(self):
+        print("heree2")
+
+        for i in reversed(range(self.check_box_layout.count())):
+            widget = self.check_box_layout.itemAt(i).widget()
             if widget:
                 widget.setParent(None)
 
-        self.visibility_layout.addWidget(QLabel("Graph Visibility:"))  # Re-add label
-
         self.signal_check = []
-        for graph in self.generate_graph_widget.graphs:
+        self.check_box_layout.addWidget(QLabel("Individual Signal Visibility check"))
+
+        print("ivde ethi")
+        for i, graph in enumerate(self.generate_graph_widget.graphs):
             check_box = QCheckBox(f"{graph.graph_id} : {graph.signal_name}")
             check_box.setChecked(True)
+            check_box.stateChanged.connect(lambda state, idx=i: self.toggle_single_graph(idx, state))
             self.signal_check.append(check_box)
-            self.visibility_layout.addWidget(check_box)
+            self.check_box_layout.addWidget(check_box)
+
     def toggle_all_graphs(self,state):
         visible=(state==Qt.Checked)
-        for i, graph in enumerate(self.generate_graph_widget.graphs):
+        for graph in self.generate_graph_widget.graphs:
                 # Show/hide the graph widget
             graph.setVisible(visible)
+
+    def toggle_single_graph(self, idx, state):
+        pass
 
