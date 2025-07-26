@@ -41,9 +41,9 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(10, 10, 10, 10)
         main_layout.setSpacing(15)
 
-        #first this is intialised
+        # first this is intialised
         self.generate_graph_widget = Generate_Graph()
-        self.generate_graph_widget.graphs_updated=self.update_visibility_checkboxes
+        self.generate_graph_widget.graphs_updated = self.update_visibility_checkboxes
 
         self.control_panel = self.setup_controls()
         main_layout.addWidget(self.control_panel)
@@ -61,13 +61,12 @@ class MainWindow(QMainWindow):
         control_layout.setContentsMargins(5, 5, 5, 5)
         control_layout.setAlignment(Qt.AlignTop)
 
-#math operation dialogue box entry
-        self.math_controls=QPushButton("Signal Operations")
+        # math operation dialogue box entry
+        self.math_controls = QPushButton("Signal Operations")
         self.math_controls.setToolTip("Click to do signal manipulations")
         self.math_controls.clicked.connect(self.open_math_dialog)
 
         control_layout.addWidget(self.math_controls)
-
 
         # Global Buttons
         control_layout.addWidget(QLabel("Playback Controls"))
@@ -102,8 +101,8 @@ class MainWindow(QMainWindow):
         self.size_combo = QComboBox()
         self.size_combo.addItems(["1MB", "5MB", "10MB", "50MB", "100MB"])
         control_layout.addWidget(self.size_combo)
-        self.new_file=QComboBox()
-        self.new_file.addItems(["Stop when file size exceed the limit","Create a new file after limit is exceeded"])
+        self.new_file = QComboBox()
+        self.new_file.addItems(["Stop when file size exceed the limit", "Create a new file after limit is exceeded"])
         control_layout.addWidget(self.new_file)
 
         # Destination selection
@@ -142,13 +141,12 @@ class MainWindow(QMainWindow):
         self.master_checkbox.stateChanged.connect(self.toggle_all_graphs)
         self.master_checkbox.setToolTip("For Master Visibility Control")
         self.visibility_layout.addWidget(self.master_checkbox)
-#will be added dynamically
+        # will be added dynamically
         print("heree1")
         self.check_box_layout = QVBoxLayout()
         self.visibility_layout.addLayout(self.check_box_layout)
 
         control_layout.addLayout(self.visibility_layout)
-
 
         container = QWidget()
         container.setLayout(control_layout)
@@ -175,9 +173,9 @@ class MainWindow(QMainWindow):
         log_format = self.logger_combo_box.currentText()
         size = self.size_combo.currentText()
         if self.new_file.currentText() == "Stop when file size exceed the limit":
-            create_new_file=True
+            create_new_file = True
         else:
-            create_new_file=False
+            create_new_file = False
         if log_format == "Select format":
             QMessageBox.warning(self, "Warning", "Please select a valid file format.")
             return
@@ -192,8 +190,8 @@ class MainWindow(QMainWindow):
             "50MB": 50 * 1024 * 1024,
             "100MB": 100 * 1024 * 1024,
         }
-        max_size=size_map.get(size,1*1024*1024) #default is 1mb
-        self.generate_graph_widget.start_logging_all(log_format, destination, max_size,create_new_file)
+        max_size = size_map.get(size, 1 * 1024 * 1024)  # default is 1mb
+        self.generate_graph_widget.start_logging_all(log_format, destination, max_size, create_new_file)
 
     def on_stop_logging(self):
         self.start_log_btn.setEnabled(True)
@@ -264,12 +262,12 @@ class MainWindow(QMainWindow):
         return super().eventFilter(obj, event)
 
     def select_folder(self):
-        #stop the plot
+        # stop the plot
         self.generate_graph_widget.stop_all()
 
         folder = QFileDialog.getExistingDirectory()
 
-        #resume after selction
+        # resume after selction
         self.generate_graph_widget.start_all()
         if folder:
             self.destination.setText(folder)
@@ -285,9 +283,7 @@ class MainWindow(QMainWindow):
         for graph in self.generate_graph_widget.graphs:
             graph.zoom_out_all(zoom_mode)
 
-
-
-    #this is for adding  the current signals to the combobox
+    # this is for adding  the current signals to the combobox
     def add_dynamic_signals(self):
         self.user_input1.clear()
         self.user_input2.clear()
@@ -295,7 +291,7 @@ class MainWindow(QMainWindow):
         self.user_input1.addItem("Select a Signal")
         self.user_input2.addItem("Select a Signal")
 
-        signal_names=[]
+        signal_names = []
         for graph in self.generate_graph_widget.graphs:
             signal_names.append(graph.name)
 
@@ -335,12 +331,12 @@ class MainWindow(QMainWindow):
             self.signal_check.append(check_box)
             self.check_box_layout.addWidget(check_box)
 
-    def toggle_all_graphs(self,state):
-        visible=(state==Qt.Checked)
+    def toggle_all_graphs(self, state):
+        visible = (state == Qt.Checked)
         for graph in self.generate_graph_widget.graphs:
-                # Show/hide the graph widget
+            # Show/hide the graph widget
             graph.setVisible(visible)
 
     def toggle_single_graph(self, idx, state):
-        pass
-
+        visible = (state == Qt.Checked)
+        self.generate_graph_widget.graphs[idx].setVisible(visible)
