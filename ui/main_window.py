@@ -335,8 +335,11 @@ class MainWindow(QMainWindow):
         visible = (state == Qt.Checked)
         for graph in self.generate_graph_widget.graphs:
             # Show/hide the graph widget
-            graph.setVisible(visible)
 
-    def toggle_single_graph(self, idx, state):
+            graph.setVisible(visible)
+        for checkbox in self.signal_check:
+            checkbox.setChecked(visible)
+
+    def toggle_single_graph(self, idx, state,graph=None):
         visible = (state == Qt.Checked)
         self.generate_graph_widget.graphs[idx].setVisible(visible)
