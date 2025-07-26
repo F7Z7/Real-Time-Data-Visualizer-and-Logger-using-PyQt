@@ -41,13 +41,15 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(10, 10, 10, 10)
         main_layout.setSpacing(15)
 
+        #first this is intialised
+        self.generate_graph_widget = Generate_Graph()
+
         self.control_panel = self.setup_controls()
         main_layout.addWidget(self.control_panel)
 
         right_layout = QVBoxLayout()
         right_layout.setSpacing(10)
 
-        self.generate_graph_widget = Generate_Graph()
         right_layout.addWidget(self.generate_graph_widget)
 
         main_layout.addLayout(right_layout)
@@ -131,15 +133,17 @@ class MainWindow(QMainWindow):
         control_layout.addLayout(log_btns)
 
         # Signal visibility
-        signal_row = QVBoxLayout()
-        self.choices = ["Show Resultant Plot", "Show Signal A", "Show Signal B", "Show X-Y Plot"]
-        self.signal_check = []
-        for text in self.choices:
-            cb = QCheckBox(text)
-            cb.setChecked(True)
-            self.signal_check.append(cb)
-            signal_row.addWidget(cb)
-        control_layout.addLayout(signal_row)
+        self.visibility_layout = QVBoxLayout()
+        self.visibility_layout.addWidget(QLabel("Graph Visibility:"))
+
+        self.master_checkbox = QCheckBox("Show All Graphs")
+        self.master_checkbox.setChecked(True)
+        self.master_checkbox.stateChanged.connect(self.toggle_all_graphs)
+        self.visibility_layout.addWidget(self.master_checkbox)
+
+        control_layout.addLayout(self.visibility_layout)
+        if hasattr(self.generate_graph_widget, "graphs") and self.generate_graph_widget.graphs:
+            self.update_visibility_layout()
 
         container = QWidget()
         container.setLayout(control_layout)
@@ -306,3 +310,23 @@ class MainWindow(QMainWindow):
                     constant=result["constant"],
                     expression=result["expression"]
                 )
+    def update_visibility_layout(self):
+        for i in reversed(range(self.visibility_layout.count())):
+            widget = self.visibility_layout.itemAt(i).widget()
+            if widget:
+                widget.setParent(None)
+
+        self.visibility_layout.addWidget(QLabel("Graph Visibility:"))  # Re-add label
+
+        self.signal_check = []
+        for graph in self.generate_graph_widget.graphs:
+            check_box = QCheckBox(f"{graph.graph_id} : {graph.signal_name}")
+            check_box.setChecked(True)
+            self.signal_check.append(check_box)
+            self.visibility_layout.addWidget(check_box)
+    def toggle_all_graphs(self,state):
+        visible=(state==Qt.Checked)
+        for i, graph in enumerate(self.generate_graph_widget.graphs):
+                # Show/hide the graph widget
+            graph.setVisible(visible)
+
