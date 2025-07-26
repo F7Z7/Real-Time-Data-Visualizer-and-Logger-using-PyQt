@@ -1,5 +1,6 @@
 from graph_plotting_functionalities.plotting import *
 
+
 # Signal name to function mapping
 def get_signal_name(name):
     signal_map = {
@@ -13,6 +14,7 @@ def get_signal_name(name):
         "Square": square_graph
     }
     return signal_map.get(name, None)
+
 
 # Operation mapping with optional constant support
 operation_map = {
@@ -28,6 +30,7 @@ operation_map = {
     "A ^ 2": lambda A, B, c: A ** 2,
     "A + B + k": lambda A, B, c: A + B + c
 }
+
 
 # Expression computation function
 def compute_expression(t, inputA, inputB, operation, constant=1.0):

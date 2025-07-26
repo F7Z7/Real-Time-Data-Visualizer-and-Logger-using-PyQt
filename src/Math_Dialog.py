@@ -76,7 +76,7 @@ class MathDialog(QDialog):
             return None
 
         if ("A" in operation and input1 == "Select a Signal") or \
-           ("B" in operation and input2 == "Select a Signal"):
+                ("B" in operation and input2 == "Select a Signal"):
             QMessageBox.critical(self, "Error", "Please select required signal(s)")
             return None
 

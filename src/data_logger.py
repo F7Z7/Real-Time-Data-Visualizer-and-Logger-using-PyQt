@@ -10,9 +10,9 @@ class DataLogger:
         self.directory = directory
         self.max_file_size = max_file_size
         self.new_file = new_file
-        self.file_format = "csv"  #default is csv
+        self.file_format = "csv"  # default is csv
 
-        #giving the files index to avoid duplicates
+        # giving the files index to avoid duplicates
         self.file_index = 1
         self.file_path = self.get_file_path()
 
@@ -42,7 +42,7 @@ class DataLogger:
             os.makedirs(self.directory)
 
         current_size = os.path.getsize(self.file_path) if os.path.exists(self.file_path) else 0
-        #if not exits =write headert true
+        # if not exits =write headert true
         write_header = current_size == 0
         with open(self.file_path, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
@@ -51,11 +51,11 @@ class DataLogger:
 
             for x, y in zip(x_data, y_data):
                 row = [x, y]
-                row_size = sum(len(str(val)) for val in row) + 2  #checking size
+                row_size = sum(len(str(val)) for val in row) + 2  # checking size
 
-                if current_size + row_size > self.max_file_size:  #checking if its inside the limits
+                if current_size + row_size > self.max_file_size:  # checking if its inside the limits
                     if self.new_file:
-                        self.file_index += 1  #increment for next file
+                        self.file_index += 1  # increment for next file
                         self.file_path = self.get_file_path()
                         current_size = 0
 

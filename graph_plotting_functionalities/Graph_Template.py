@@ -3,6 +3,7 @@
 import pyqtgraph as pg
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
+
 class GraphTemplate(QWidget):
     def __init__(self, title="Signal Plot", xlabel="Time (s)", ylabel="Amplitude", legend=False, height=300):
         super().__init__()
@@ -33,5 +34,5 @@ class GraphTemplate(QWidget):
 
     def add_curve(self, x_data, y_data, label="Signal", pen_color="r", width=5):
         pen = pg.mkPen(color=pen_color, width=width)
-        self.curve= self.plot.plot(x_data, y_data, pen=pen, name=label)
-        return self.curve   #stores the plot data
+        self.curve = self.plot.plot(x_data, y_data, pen=pen, name=label)
+        return self.curve  # stores the plot data

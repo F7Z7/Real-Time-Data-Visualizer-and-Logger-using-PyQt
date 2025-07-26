@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 import time
 
+
 class DataWorker(QObject):
     data_ready = pyqtSignal(object, object, object)  # t_list, y_list, y2_list (optional)
     MAX_POINTS = 500  # limit the max poisnt
@@ -29,7 +30,7 @@ class DataWorker(QObject):
 
             self.t_data.append(self.t)
             self.y_data.append(y1)
-            if len(self.t_data) >self.MAX_POINTS:
+            if len(self.t_data) > self.MAX_POINTS:
                 self.t_data = self.t_data[-self.MAX_POINTS:]
                 self.y_data = self.y_data[-self.MAX_POINTS:]
             try:

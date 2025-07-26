@@ -8,6 +8,7 @@ from graph_plotting_functionalities.graph_widget import GraphWidget
 from graph_plotting_functionalities.plotting import Signal_list
 import numpy as np
 
+
 class Generate_Graph(QWidget):
     def __init__(self):
         super().__init__()
@@ -20,7 +21,7 @@ class Generate_Graph(QWidget):
         self.dynamic_graphs_layout = QVBoxLayout(self.scroll_content)
         self.dynamic_graphs_layout.setSpacing(0)
         self.scroll_area.setWidget(self.scroll_content)
-        self.graphs_updated=None
+        self.graphs_updated = None
         self.initUI()
 
     def initUI(self):
@@ -90,11 +91,11 @@ class Generate_Graph(QWidget):
         for graph in self.graphs:
             graph.reset_plot()
 
-    def start_logging_all(self, log_format, destination,max_file_size,create_new_file):
+    def start_logging_all(self, log_format, destination, max_file_size, create_new_file):
 
         for graph in self.graphs:
             # graph.size_combo.setCurrentText(size)
-            graph.start_logging(destination,max_file_size,log_format,create_new_file)
+            graph.start_logging(destination, max_file_size, log_format, create_new_file)
 
     def stop_logging_all(self):
         for graph in self.graphs:
@@ -124,7 +125,6 @@ class Generate_Graph(QWidget):
             initial_signal = signal_names[0] if signal_names else "Sin"
 
             print(f"Creating math graph with ID: {new_graph_id}")
-
 
             math_graph = GraphWidget(
                 graph_id=new_graph_id,
@@ -157,7 +157,6 @@ class Generate_Graph(QWidget):
             self.graphs.append(math_graph)
             self.dynamic_graphs_layout.addWidget(math_graph)
 
-
             # Start the math plot after a small delay to ensure everything is set up
             QTimer.singleShot(100, math_graph.start_plot)
 
@@ -170,6 +169,3 @@ class Generate_Graph(QWidget):
         except Exception as e:
             print(f"Error adding math plot: {e}")
             QMessageBox.critical(None, "Error", f"Failed to add math plot: {str(e)}")
-
-
-

@@ -17,6 +17,7 @@ from src.data_logger import DataLogger
 from src.data_worker import DataWorker
 from graph_plotting_functionalities.Graph_Template import GraphTemplate
 
+
 def create_button_row(pairs):
     row = QHBoxLayout()
     for label, slot in pairs:
@@ -28,7 +29,7 @@ def create_button_row(pairs):
 
 
 class GraphWidget(QWidget):
-    def __init__(self, graph_id, graph_manager,mode="operation", signal1="Sin", signal2="Cos", num=1):
+    def __init__(self, graph_id, graph_manager, mode="operation", signal1="Sin", signal2="Cos", num=1):
         super().__init__()
         self.file_size = None
         self.graph_id = graph_id
@@ -49,10 +50,11 @@ class GraphWidget(QWidget):
         self.logging_timer.setInterval(500)
         self.logging_timer.timeout.connect(self.log_periodically)
 
-        self.dialog= AxisRangeDialog()
-        self.graph_template.plot.scene().sigMouseClicked.connect(self.on_plot_clicked) #this for so that the diaolgue box appaers when the clicked on the plot
-#for opeartion tabs
-        self.is_math=False
+        self.dialog = AxisRangeDialog()
+        self.graph_template.plot.scene().sigMouseClicked.connect(
+            self.on_plot_clicked)  # this for so that the diaolgue box appaers when the clicked on the plot
+        # for opeartion tabs
+        self.is_math = False
         self.math_input1 = None
         self.math_input2 = None
         self.math_operation = None
@@ -60,7 +62,7 @@ class GraphWidget(QWidget):
 
     def log_periodically(self):
         if self.is_logging and self.logger:
-            if self.log_format== "CSV":
+            if self.log_format == "CSV":
                 self.logger.logg_csv()
             elif self.log_format == "Binary":
                 self.logger.logg_binary()
@@ -132,49 +134,48 @@ class GraphWidget(QWidget):
     #         layout.addWidget(btn)
     #
     #     parent_zoom.addLayout(layout)
-#     def create_range_controls(self, parent_layout):
-#         group = QGroupBox("Zoom Range & Amplitude")
-#         range_amplitude_layout = QVBoxLayout()
-# #x axis setting
-#         range_layout = QVBoxLayout()
-#         range_layout.addWidget(QLabel("Enter Desired Range: -10s to 10s"))
-#
-#         range_input_line_edit_layout = QHBoxLayout()
-#         self.range_from_input = QLineEdit()
-#         self.range_from_input.setPlaceholderText("From")
-#         self.range_to_input = QLineEdit()
-#         self.range_to_input.setPlaceholderText("To")
-#
-#         for line_edit in [self.range_from_input, self.range_to_input]:
-#             range_input_line_edit_layout.addWidget(line_edit)
-#
-#         range_layout.addLayout(range_input_line_edit_layout)
-# #yaxis setting
-#         amplitude_layout = QVBoxLayout()
-#         amplitude_layout.addWidget(QLabel("Enter Desired Amplitude: -1 to 1"))
-#
-#         amplitude_input_line_edit_layout = QHBoxLayout()
-#         self.amplitude_from_input = QLineEdit()
-#         self.amplitude_from_input.setPlaceholderText("From")
-#         self.amplitude_to_input = QLineEdit()
-#         self.amplitude_to_input.setPlaceholderText("To")
-#
-#         for line_edit in [self.amplitude_from_input, self.amplitude_to_input]:
-#             amplitude_input_line_edit_layout.addWidget(line_edit)
-#
-#         amplitude_layout.addLayout(amplitude_input_line_edit_layout)
-#
-#        #combining both
-#         for layout in [range_layout, amplitude_layout]:
-#             range_amplitude_layout.addLayout(layout)
-#         reformat_btn=QPushButton("Reformat the axes")
-#         reformat_btn.clicked.connect(self.on_reformat_clicked)
-#         range_amplitude_layout.addWidget(reformat_btn)
-#         group.setLayout(range_amplitude_layout)
-#         group.setEnabled(False)
-#         parent_layout.addWidget(group)
-#         parent_layout.setEnabled(False)
-
+    #     def create_range_controls(self, parent_layout):
+    #         group = QGroupBox("Zoom Range & Amplitude")
+    #         range_amplitude_layout = QVBoxLayout()
+    # #x axis setting
+    #         range_layout = QVBoxLayout()
+    #         range_layout.addWidget(QLabel("Enter Desired Range: -10s to 10s"))
+    #
+    #         range_input_line_edit_layout = QHBoxLayout()
+    #         self.range_from_input = QLineEdit()
+    #         self.range_from_input.setPlaceholderText("From")
+    #         self.range_to_input = QLineEdit()
+    #         self.range_to_input.setPlaceholderText("To")
+    #
+    #         for line_edit in [self.range_from_input, self.range_to_input]:
+    #             range_input_line_edit_layout.addWidget(line_edit)
+    #
+    #         range_layout.addLayout(range_input_line_edit_layout)
+    # #yaxis setting
+    #         amplitude_layout = QVBoxLayout()
+    #         amplitude_layout.addWidget(QLabel("Enter Desired Amplitude: -1 to 1"))
+    #
+    #         amplitude_input_line_edit_layout = QHBoxLayout()
+    #         self.amplitude_from_input = QLineEdit()
+    #         self.amplitude_from_input.setPlaceholderText("From")
+    #         self.amplitude_to_input = QLineEdit()
+    #         self.amplitude_to_input.setPlaceholderText("To")
+    #
+    #         for line_edit in [self.amplitude_from_input, self.amplitude_to_input]:
+    #             amplitude_input_line_edit_layout.addWidget(line_edit)
+    #
+    #         amplitude_layout.addLayout(amplitude_input_line_edit_layout)
+    #
+    #        #combining both
+    #         for layout in [range_layout, amplitude_layout]:
+    #             range_amplitude_layout.addLayout(layout)
+    #         reformat_btn=QPushButton("Reformat the axes")
+    #         reformat_btn.clicked.connect(self.on_reformat_clicked)
+    #         range_amplitude_layout.addWidget(reformat_btn)
+    #         group.setLayout(range_amplitude_layout)
+    #         group.setEnabled(False)
+    #         parent_layout.addWidget(group)
+    #         parent_layout.setEnabled(False)
 
     # def create_logging_controls(self, parent_layout):
     #     group = QGroupBox("Data Logging")
@@ -255,6 +256,7 @@ class GraphWidget(QWidget):
             return  # Or handle accordingly (e.g., pad/crop the shorter one)
 
         self.curve.setData(t, y1)
+
     def start_plot(self):
         if self.is_math:
             self.math_plot()
@@ -284,11 +286,11 @@ class GraphWidget(QWidget):
         # Delay a bit to ensure old worker is shut down before starting a new one
         QTimer.singleShot(0, self.setup_worker)
 
-    def zoom_in_all(self,zoom_mode):
-        self.apply_zoom(True,zoom_mode)
+    def zoom_in_all(self, zoom_mode):
+        self.apply_zoom(True, zoom_mode)
 
-    def zoom_out_all(self,zoom_mode):
-        self.apply_zoom(False,zoom_mode)
+    def zoom_out_all(self, zoom_mode):
+        self.apply_zoom(False, zoom_mode)
 
     def auto_scale(self):
         self.graph_template.plot.enableAutoRange(axis=pg.ViewBox.XYAxes, enable=True)
@@ -302,13 +304,13 @@ class GraphWidget(QWidget):
 
         if zoom_mode in ["X Axis", "Both"]:
             width = (x_range[1] - x_range[0]) * factor
-            pw.setXRange(x_center - width/2, x_center + width/2)
+            pw.setXRange(x_center - width / 2, x_center + width / 2)
         if zoom_mode in ["Y Axis", "Both"]:
             height = (y_range[1] - y_range[0]) * factor
-            pw.setYRange(y_center - height/2, y_center + height/2)
+            pw.setYRange(y_center - height / 2, y_center + height / 2)
 
-    def start_logging(self,destinaion,max_file_size,log_format,create_new_file:bool):
-        self.folder=destinaion
+    def start_logging(self, destinaion, max_file_size, log_format, create_new_file: bool):
+        self.folder = destinaion
         self.log_format = log_format
         if not self.folder:
             QMessageBox.warning(self, "Warning", "Please select a destination folder.")
@@ -319,8 +321,9 @@ class GraphWidget(QWidget):
             return
 
         file_path = os.path.join(self.folder, f"{self.signal_name}_{self.graph_id}.csv")
-        self.file_size=max_file_size
-        self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=self.folder,max_file_size=self.file_size,new_file=create_new_file)
+        self.file_size = max_file_size
+        self.logger = DataLogger(curve=self.curve, signal_name=self.signal_name, directory=self.folder,
+                                 max_file_size=self.file_size, new_file=create_new_file)
         self.is_logging = True
         self.logging_timer.start()
 
@@ -328,13 +331,15 @@ class GraphWidget(QWidget):
         self.is_logging = False
         self.logging_timer.stop()
         print(f"Log saved in {self.folder} as {self.log_format}")
-    def on_plot_clicked(self,event):
+
+    def on_plot_clicked(self, event):
         if event.button() == Qt.RightButton:
             self.on_reformat_clicked()
+
     def on_reformat_clicked(self):
-        view_range=self.graph_template.plot.viewRange()
+        view_range = self.graph_template.plot.viewRange()
         self.dialog.set_fields(view_range)
-        if self.dialog.exec_()==self.dialog.Accepted:
+        if self.dialog.exec_() == self.dialog.Accepted:
             x_min, x_max, y_min, y_max = self.dialog.get_ranges()
             self.graph_template.plot.setXRange(x_min, x_max)
             self.graph_template.plot.setYRange(y_min, y_max)
@@ -377,7 +382,6 @@ class GraphWidget(QWidget):
             y1 = y1[:min_length]
             x2 = x2[:min_length]
             y2 = y2[:min_length]
-
 
             # Compute the math expression
             result_y = self.compute_math_expression(y1, y2)
