@@ -142,7 +142,6 @@ class MainWindow(QMainWindow):
         self.master_checkbox.setToolTip("For Master Visibility Control")
         self.visibility_layout.addWidget(self.master_checkbox)
         # will be added dynamically
-        print("heree1")
         self.check_box_layout = QVBoxLayout()
         self.visibility_layout.addLayout(self.check_box_layout)
 
@@ -313,7 +312,6 @@ class MainWindow(QMainWindow):
                 )
 
     def update_visibility_checkboxes(self):
-        print("heree2")
 
         for i in reversed(range(self.check_box_layout.count())):
             widget = self.check_box_layout.itemAt(i).widget()
@@ -323,7 +321,6 @@ class MainWindow(QMainWindow):
         self.signal_check = []
         self.check_box_layout.addWidget(QLabel("Individual Signal Visibility check"))
 
-        print("ivde ethi")
         for i, graph in enumerate(self.generate_graph_widget.graphs):
             check_box = QCheckBox(f"{graph.graph_id} : {graph.signal_name}")
             check_box.setChecked(True)
@@ -340,6 +337,6 @@ class MainWindow(QMainWindow):
         for checkbox in self.signal_check:
             checkbox.setChecked(visible)
 
-    def toggle_single_graph(self, idx, state,graph=None):
+    def toggle_single_graph(self, idx, state, graph=None):
         visible = (state == Qt.Checked)
         self.generate_graph_widget.graphs[idx].setVisible(visible)
