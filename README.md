@@ -1,5 +1,3 @@
-
-
 <h1>Real-Time Data Visualizer & Logger ⚡</h1>
 <p>A PyQt5-based real-time multi-signal visualizer, math processor, and data logger.</p>
 
@@ -10,8 +8,10 @@
 This application is a desktop tool built using <strong>PyQt5</strong> and <strong>pyqtgraph</strong>
 for real-time acquisition, visualization, and logging of simulated signals.  
 It supports modular plotting, live mathematical operations, and flexible CSV/Binary logging.
+
+<img src="images/user_interface.png" alt="User Interface" />
+
 </p>
-<p></p>
 
 <hr>
 
@@ -24,17 +24,16 @@ It supports modular plotting, live mathematical operations, and flexible CSV/Bin
   <li>Global controls for Start All, Stop All, Reset All.</li>
 </ul>
 
-<p><em>[images/multi_plots.png]</em></p>
-
 <h3>2. Advanced Signal Math Operations</h3>
 <ul>
   <li>Perform A+B, A−B, sin(A), cos(B), sin(A)+2B, etc.</li>
   <li>Math results appear as new live plots.</li>
   <li>NumPy-based vectorized computation.</li>
 </ul>
-
-<p><em>[images/math_dialog.jpg]</em></p>
-<p><em>[images/math_result.jpg]</em></p>
+<div style="display: flex; gap: 1rem" >
+<img src="images/math_dialog.png" alt="Math Dialog" />
+<img src="images/math_results.png" alt="Math Result" />
+</div>
 
 <h3>3. Robust Data Logging</h3>
 <ul>
@@ -42,9 +41,6 @@ It supports modular plotting, live mathematical operations, and flexible CSV/Bin
   <li>Automatic file rotation based on size limits.</li>
   <li>Optimized logging with minimal disk I/O.</li>
 </ul>
-
-<p><em>[images/logged_files.jpg]</em></p>
-
 <h3>4. Interactive Plot Controls</h3>
 <ul>
   <li>Zoom, autoscale, and manual axis range settings.</li>
@@ -52,11 +48,76 @@ It supports modular plotting, live mathematical operations, and flexible CSV/Bin
   <li>Toggle visibility of individual signals.</li>
 </ul>
 
-<p><em>[images/zoom_controls.jpg]</em></p>
+<h3>4.1 Zoom & Axis Controls</h3>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+
+  <figure style="
+      text-align: center;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      padding: 15px;
+      background: #f8f8f8;
+    ">
+    <img src="images/zoom_controls.png"
+         alt="Individual Zoom Controls"
+         style="width: 100%; max-width: 350px; height: auto;" />
+    <figcaption style="margin-top: 10px;">
+      <em>Figure 1: Individual zoom controls for each plot.</em>
+    </figcaption>
+  </figure>
+
+  <figure style="
+      text-align: center;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      padding: 15px;
+      background: #f8f8f8;
+    ">
+    <img src="images/zoom_X.png"
+         alt="Zoom X"
+         style="width: 100%; max-width: 350px; height: auto;" />
+    <figcaption style="margin-top: 10px;">
+      <em>Figure 2: Zoom applied along the X-axis.</em>
+    </figcaption>
+  </figure>
+
+  <figure style="
+      text-align: center;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      padding: 15px;
+      background: #f8f8f8;
+    ">
+    <img src="images/zoom_Y.png"
+         alt="Zoom Y"
+         style="width: 100%; max-width: 350px; height: auto;" />
+    <figcaption style="margin-top: 10px;">
+      <em>Figure 3: Zoom applied along the Y-axis.</em>
+    </figcaption>
+  </figure>
+
+  <figure style="
+      text-align: center;
+      border: 1px solid #aaa;
+      border-radius: 8px;
+      padding: 15px;
+      background: #f8f8f8;
+    ">
+    <img src="images/universal_Zoom.png"
+         alt="Universal Zoom"
+         style="width: 100%; max-width: 350px; height: auto;" />
+    <figcaption style="margin-top: 10px;">
+      <em>Figure 4: Universal zoom affecting both axes.</em>
+    </figcaption>
+  </figure>
+
+</div>
+
 
 <hr>
 
-<h2>🧰 Technology Stack</h2>
+<h2> Technology Stack</h2>
 <table border="1" cellpadding="6" cellspacing="0">
 <tr><th>Library</th><th>Version</th><th>Purpose</th></tr>
 <tr><td>PyQt5</td><td>≥ 5.15</td><td>GUI Framework</td></tr>
@@ -97,54 +158,60 @@ It supports modular plotting, live mathematical operations, and flexible CSV/Bin
 
 <h2>📊 Results & Demonstration</h2>
 
-<h3>User Interface</h3>
-<p><em>[images/ui_demo.jpg]</em></p>
-
-<h3>Math Operation Example</h3>
-<p><em>[images/math_demo.jpg]</em></p>
 
 <h3>Data Logging Output</h3>
-<p><em>[images/log_output.jpg]</em></p>
 
-<h3>Zoom & Axis Controls</h3>
-<p><em>[images/zoom_demo.jpg]</em></p>
+<img src="images/logged_files.png" alt="Logged Files" />
 
 <hr>
 
 <h2>🧪 Testing & Validation</h2>
 <ul>
-  <li>Tested with up to 6 real-time plots at 20Hz.</li>
+  <li>Tested with up to 50 real-time plots at 20Hz.</li>
   <li>No GUI blocking due to isolated QThreads.</li>
   <li>Circular buffers prevent memory overflow.</li>
   <li>Logging checked for timestamp-value consistency.</li>
 </ul>
 
-<p><em>[images/testing.jpg]</em></p>
 
 <hr>
 
-<h2>📂 Suggested Repository Structure</h2>
+<h2>📂 Repository Structure</h2>
 
 <pre>
-src/
- ├── ui/
- │    ├── main_window.py
- │    ├── dialogs/
- │    └── components/
- ├── data_worker.py
- ├── data_logger.py
- ├── graph_widget.py
- ├── math_functions.py
-assets/
- ├── screenshots/
-logs/
-README.html
+
+Real-Time-Data-Visualizer-and-Logger
+│
+├─ README.md
+├─ requirements.txt
+├─ main.py
+│
+├─ images/
+│  ├─ multi_plots.png
+│  └─ user_interface.png
+│
+├─ graph_plotting_functionalities/
+│  ├─ AxisRangeDialog.py
+│  ├─ Graph_Layout.py
+│  ├─ Graph_Template.py
+│  ├─ Random-mixed signal.py
+│  ├─ graph_widget.py
+│  └─ plotting.py
+│
+├─ src/
+│  ├─ __init__.py
+│  ├─ app.py
+│  ├─ data_acquisition.py
+│  ├─ data_logger.py
+│  ├─ data_worker.py
+│  ├─ math_functions.py
+│  ├─ Math_Dialog.py
+│  ├─ replay.py
+│  └─ utils.py
+│
+└─ ui/
+   ├─ main_window.py
+   └─ main_window.ui
 </pre>
 
 <hr>
-
-<h2>📜 License</h2>
-<p><em>[Add your preferred license here]</em></p>
-
-</body>
-</html>
