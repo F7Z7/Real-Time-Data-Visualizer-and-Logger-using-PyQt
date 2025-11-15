@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>Real-Time Data Visualizer & Logger – README</title>
-</head>
 
-<body style="font-family: Arial, sans-serif; line-height: 1.6;">
 
 <h1>Real-Time Data Visualizer & Logger ⚡</h1>
 <p>A PyQt5-based real-time multi-signal visualizer, math processor, and data logger.</p>
@@ -18,7 +11,7 @@ This application is a desktop tool built using <strong>PyQt5</strong> and <stron
 for real-time acquisition, visualization, and logging of simulated signals.  
 It supports modular plotting, live mathematical operations, and flexible CSV/Binary logging.
 </p>
-![main_ui](images/user_interface.png)
+<p></p>
 
 <hr>
 
@@ -31,7 +24,7 @@ It supports modular plotting, live mathematical operations, and flexible CSV/Bin
   <li>Global controls for Start All, Stop All, Reset All.</li>
 </ul>
 
-<p><em>[images/multi_plots.jpg]</em></p>
+<p><em>[images/multi_plots.png]</em></p>
 
 <h3>2. Advanced Signal Math Operations</h3>
 <ul>
