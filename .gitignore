@@ -1,0 +1,78 @@
+# ----------------------------------------
+# Python build / cache
+# ----------------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Byte-compiled
+*$py.class
+
+# C extensions
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# Jupyter checkpoints (if any)
+.ipynb_checkpoints/
+
+# ----------------------------------------
+# IDE / Editor specific
+# ----------------------------------------
+
+# PyCharm / IntelliJ
+.idea/
+*.iml
+
+# VSCode
+.vscode/
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# ----------------------------------------
+# OS-specific files
+# ----------------------------------------
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# ----------------------------------------
+# Logs & runtime data
+# ----------------------------------------
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# ----------------------------------------
+# Project specific
+# ----------------------------------------
+# Ignore compiled Qt UI if generated
+*.ui~
+*.qrc~
