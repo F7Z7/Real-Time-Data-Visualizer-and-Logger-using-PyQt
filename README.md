@@ -18,7 +18,7 @@ This application is a desktop tool built using <strong>PyQt5</strong> and <stron
 for real-time acquisition, visualization, and logging of simulated signals.  
 It supports modular plotting, live mathematical operations, and flexible CSV/Binary logging.
 </p>
-![main_ui](images/user_interface.jpg)
+![main_ui](images/user_interface.png)
 
 <hr>
 
